@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,7 +24,10 @@ public class RsController {
   }
 
   @GetMapping("/rs/getEventList")
-  public List<RsEvent> getEventListOfSpecifiedRange(@RequestParam int start, @RequestParam int end) {
-    return rsList.subList(start - 1, end);
+  public List<RsEvent> getEventListOfSpecifiedRange(@RequestParam (required = false) Integer start, @RequestParam (required = false) Integer end) {
+    if (start != null && end != null) {
+      return rsList.subList(start - 1, end);
+    }
+    return rsList;
   }
 }

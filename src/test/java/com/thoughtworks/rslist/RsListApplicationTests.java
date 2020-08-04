@@ -61,4 +61,17 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void should_return_entire_rs_event_list() throws Exception {
+        mockMvc.perform(get("/rs/getEventList"))
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].name", is("美股熔断")))
+                .andExpect(jsonPath("$[0].keyword", is("经济")))
+                .andExpect(jsonPath("$[1].name", is("边境冲突")))
+                .andExpect(jsonPath("$[1].keyword", is("军事")))
+                .andExpect(jsonPath("$[2].name", is("示威活动")))
+                .andExpect(jsonPath("$[2].keyword", is("自由")))
+                .andExpect(status().isOk());
+    }
+
 }
