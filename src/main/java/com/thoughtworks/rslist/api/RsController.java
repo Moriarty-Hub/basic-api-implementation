@@ -44,4 +44,9 @@ public class RsController {
       rsList.get(id - 1).setKeyword(keyword);
     }
   }
+
+  @GetMapping("/rs/deleteEvent")
+  public void deleteEvent(@RequestParam int id) {
+    rsList.remove(id - 1);
+  }
 }

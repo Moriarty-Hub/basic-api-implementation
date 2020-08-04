@@ -132,4 +132,20 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$.keyword", is("体育")));
     }
 
+    @Test
+    @Order(8)
+    void should_delete_the_specified_event_by_id() throws Exception {
+        mockMvc.perform(get("/rs/deleteEvent?id=2"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getEventList"))
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].name", is("奥运会推迟")))
+                .andExpect(jsonPath("$[0].keyword", is("体育")))
+                .andExpect(jsonPath("$[1].name", is("示威活动")))
+                .andExpect(jsonPath("$[1].keyword", is("暴力")))
+                .andExpect(jsonPath("$[2].name", is("收割股民")))
+                .andExpect(jsonPath("$[2].keyword", is("民生")))
+                .andExpect(status().isOk());
+    }
+
 }
