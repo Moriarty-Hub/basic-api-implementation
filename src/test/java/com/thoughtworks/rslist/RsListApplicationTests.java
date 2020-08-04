@@ -1,6 +1,9 @@
 package com.thoughtworks.rslist;
 
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,12 +18,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RsListApplicationTests {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
+    @Order(1)
     void should_return_rs_event_of_specified_index() throws Exception {
         mockMvc.perform(get("/rs/getEvent?id=1"))
                 .andExpect(jsonPath("$.name", is("美股熔断")))
@@ -37,6 +42,7 @@ class RsListApplicationTests {
     }
 
     @Test
+    @Order(2)
     void should_return_rs_event_list_between_specified_range() throws Exception {
         mockMvc.perform(get("/rs/getEventList?start=1&end=3"))
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -64,6 +70,7 @@ class RsListApplicationTests {
     }
 
     @Test
+    @Order(3)
     void should_return_entire_rs_event_list() throws Exception {
         mockMvc.perform(get("/rs/getEventList"))
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -77,6 +84,7 @@ class RsListApplicationTests {
     }
 
     @Test
+    @Order(4)
     void should_add_the_given_event_into_event_list() throws Exception {
         mockMvc.perform(get("/rs/getEventList")).andExpect(jsonPath("$", hasSize(3)));
         String jsonStringOfNewEvent = "{\"name\": \"收割股民\", \"keyword\": \"民生\"}";
@@ -87,6 +95,41 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$.name", is("收割股民")))
                 .andExpect(jsonPath("$.keyword", is("民生")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(5)
+    void should_update_event_when_name_was_given() throws Exception {
+        mockMvc.perform(get("/rs/getEvent?id=2"))
+                .andExpect(jsonPath("$.name", is("边境冲突")));
+        mockMvc.perform(get("/rs/updateEvent?id=2&name=收复台湾"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getEvent?id=2"))
+                .andExpect(jsonPath("$.name", is("收复台湾")));
+    }
+
+    @Test
+    @Order(6)
+    void should_update_event_when_keyword_was_given() throws Exception {
+        mockMvc.perform(get("/rs/getEvent?id=3"))
+                .andExpect(jsonPath("$.keyword", is("自由")));
+        mockMvc.perform(get("/rs/updateEvent?id=3&keyword=暴力"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getEvent?id=3"))
+                .andExpect(jsonPath("$.keyword", is("暴力")));
+    }
+
+    @Test
+    @Order(7)
+    void should_update_event_when_name_and_keyword_were_given() throws Exception {
+        mockMvc.perform(get("/rs/getEvent?id=1"))
+                .andExpect(jsonPath("$.name", is("美股熔断")))
+                .andExpect(jsonPath("$.keyword", is("经济")));
+        mockMvc.perform(get("/rs/updateEvent?id=1&name=奥运会推迟&keyword=体育"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getEvent?id=1"))
+                .andExpect(jsonPath("$.name", is("奥运会推迟")))
+                .andExpect(jsonPath("$.keyword", is("体育")));
     }
 
 }

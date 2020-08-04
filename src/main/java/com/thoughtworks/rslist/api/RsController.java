@@ -33,4 +33,15 @@ public class RsController {
   public void addEvent(@RequestBody RsEvent rsEvent) {
     rsList.add(rsEvent);
   }
+
+  @GetMapping("/rs/updateEvent")
+  public void updateEvent(@RequestParam int id, @RequestParam (required = false) String name,
+                          @RequestParam (required = false) String keyword) {
+    if (name != null) {
+      rsList.get(id - 1).setName(name);
+    }
+    if (keyword != null) {
+      rsList.get(id - 1).setKeyword(keyword);
+    }
+  }
 }
