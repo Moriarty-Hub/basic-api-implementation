@@ -15,4 +15,9 @@ public class RsController {
   public String getEvent(@RequestParam int id) {
     return rsList.get(id - 1);
   }
+
+  @GetMapping("/rs/getEventList")
+  public List<String> getEventListOfSpecifiedRange(@RequestParam int start, @RequestParam int end) {
+    return rsList.subList(start - 1, end);
+  }
 }
