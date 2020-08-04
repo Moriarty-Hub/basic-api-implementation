@@ -21,13 +21,16 @@ class RsListApplicationTests {
     @Test
     void should_return_rs_event_of_specified_index() throws Exception {
         mockMvc.perform(get("/rs/getEvent?id=1"))
-                .andExpect(content().string("第一条事件"))
+                .andExpect(jsonPath("$.name", is("美股熔断")))
+                .andExpect(jsonPath("$.keyword", is("经济")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEvent?id=2"))
-                .andExpect(content().string("第二条事件"))
+                .andExpect(jsonPath("$.name", is("边境冲突")))
+                .andExpect(jsonPath("$.keyword", is("军事")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEvent?id=3"))
-                .andExpect(content().string("第三条事件"))
+                .andExpect(jsonPath("$.name", is("示威活动")))
+                .andExpect(jsonPath("$.keyword", is("自由")))
                 .andExpect(status().isOk());
     }
 
@@ -35,19 +38,26 @@ class RsListApplicationTests {
     void should_return_rs_event_list_between_specified_range() throws Exception {
         mockMvc.perform(get("/rs/getEventList?start=1&end=3"))
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0]", is("第一条事件")))
-                .andExpect(jsonPath("$[1]", is("第二条事件")))
-                .andExpect(jsonPath("$[2]", is("第三条事件")))
+                .andExpect(jsonPath("$[0].name", is("美股熔断")))
+                .andExpect(jsonPath("$[0].keyword", is("经济")))
+                .andExpect(jsonPath("$[1].name", is("边境冲突")))
+                .andExpect(jsonPath("$[1].keyword", is("军事")))
+                .andExpect(jsonPath("$[2].name", is("示威活动")))
+                .andExpect(jsonPath("$[2].keyword", is("自由")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEventList?start=1&end=2"))
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0]", is("第一条事件")))
-                .andExpect(jsonPath("$[1]", is("第二条事件")))
+                .andExpect(jsonPath("$[0].name", is("美股熔断")))
+                .andExpect(jsonPath("$[0].keyword", is("经济")))
+                .andExpect(jsonPath("$[1].name", is("边境冲突")))
+                .andExpect(jsonPath("$[1].keyword", is("军事")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEventList?start=2&end=3"))
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0]", is("第二条事件")))
-                .andExpect(jsonPath("$[1]", is("第三条事件")))
+                .andExpect(jsonPath("$[0].name", is("边境冲突")))
+                .andExpect(jsonPath("$[0].keyword", is("军事")))
+                .andExpect(jsonPath("$[1].name", is("示威活动")))
+                .andExpect(jsonPath("$[1].keyword", is("自由")))
                 .andExpect(status().isOk());
     }
 
