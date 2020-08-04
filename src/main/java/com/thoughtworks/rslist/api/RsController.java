@@ -1,9 +1,7 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.RsEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,5 +27,10 @@ public class RsController {
       return rsList.subList(start - 1, end);
     }
     return rsList;
+  }
+
+  @PostMapping("/rs/addEvent")
+  public void addEvent(@RequestBody RsEvent rsEvent) {
+    rsList.add(rsEvent);
   }
 }

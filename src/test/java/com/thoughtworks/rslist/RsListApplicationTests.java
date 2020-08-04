@@ -4,11 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -71,6 +73,19 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[1].keyword", is("军事")))
                 .andExpect(jsonPath("$[2].name", is("示威活动")))
                 .andExpect(jsonPath("$[2].keyword", is("自由")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_add_the_given_event_into_event_list() throws Exception {
+        mockMvc.perform(get("/rs/getEventList")).andExpect(jsonPath("$", hasSize(3)));
+        String jsonStringOfNewEvent = "{\"name\": \"收割股民\", \"keyword\": \"民生\"}";
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfNewEvent))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getEventList")).andExpect(jsonPath("$", hasSize(4)));
+        mockMvc.perform(get("/rs/getEvent?id=4"))
+                .andExpect(jsonPath("$.name", is("收割股民")))
+                .andExpect(jsonPath("$.keyword", is("民生")))
                 .andExpect(status().isOk());
     }
 
