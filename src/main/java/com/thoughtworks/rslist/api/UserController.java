@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.bean.User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/rs/addNewUser")
-    public void addNewUser(@RequestBody User user) {
+    public void addNewUser(@RequestBody @Valid User user) {
         userList.add(user);
     }
 }

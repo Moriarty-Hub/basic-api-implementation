@@ -100,4 +100,84 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.phone", is("12345678904")))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @Order(4)
+    void should_get_bad_request_when_the_length_of_username_is_greater_than_eight() throws Exception {
+        User user = new User("user4user4", 35, "female", "user4@thoughtworks.com", "12345678905");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(5)
+    void should_get_bad_request_when_username_is_null() throws Exception {
+        User user = new User(null, 35, "female", "user4@thoughtworks.com", "12345678905");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(6)
+    void should_get_bad_request_when_gender_is_null() throws Exception {
+        User user = new User("user4", 35, null, "user4@thoughtworks.com", "12345678905");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(7)
+    void should_get_bad_request_when_age_is_less_than_18() throws Exception {
+        User user = new User("user4", 17, "female", "user4@thoughtworks.com", "12345678905");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(8)
+    void should_get_bad_request_when_age_is_greater_than_100() throws Exception {
+        User user = new User("user4", 101, "female", "user4@thoughtworks.com", "12345678905");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(9)
+    void should_get_bad_request_when_email_is_invalid() throws Exception {
+        User user = new User("user4", 35, "female", "user4thoughtworks.com", "12345678905");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(10)
+    void should_get_bad_request_when_phone_number_is_null() throws Exception {
+        User user = new User("user4", 35, "female", "user4@thoughtworks.com", null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(11)
+    void should_get_bad_request_when_phone_number_is_invalid() throws Exception {
+        User user = new User("user4", 35, "female", "user4@thoughtworks.com", "2345678905");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+                .andExpect(status().isBadRequest());
+    }
 }

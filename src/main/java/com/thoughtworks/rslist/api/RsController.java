@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class RsController {
   }
 
   @PostMapping("/rs/addEvent")
-  public void addEvent(@RequestBody RsEvent rsEvent) {
+  public void addEvent(@RequestBody @Valid RsEvent rsEvent) {
     UserController userController = appContext.getBean(UserController.class);
     if (userController.getUserByUsername(rsEvent.getUser().getUserName()) == null) {
       userController.addNewUser(rsEvent.getUser());

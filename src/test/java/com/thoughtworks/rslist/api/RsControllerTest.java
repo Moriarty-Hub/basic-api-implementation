@@ -216,4 +216,41 @@ class RsControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @Order(11)
+    void should_get_bad_request_when_event_name_is_null() throws Exception {
+        String jsonStringOfRsEvent = "{\"keyword\":\"经济\", " +
+                "\"user\": " +
+                "{\"userName\":\"user3\", " +
+                "\"age\": 25, " +
+                "\"gender\": \"male\", " +
+                "\"email\": \"user3@thoughtworks.com\", " +
+                "\"phone\": \"12345678904\"}}";
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(12)
+    void should_get_bad_request_when_keyword_is_null() throws Exception {
+        String jsonStringOfRsEvent = "{\"name\":\"复工复产\", " +
+                "\"user\": " +
+                "{\"userName\":\"user3\", " +
+                "\"age\": 25, " +
+                "\"gender\": \"male\", " +
+                "\"email\": \"user3@thoughtworks.com\", " +
+                "\"phone\": \"12345678904\"}}";
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(13)
+    void should_get_bad_request_when_user_is_null() throws Exception {
+        String jsonStringOfRsEvent = "{\"name\":\"复工复产\", " +
+                "\"keyword\":\"经济\"}}";
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent))
+                .andExpect(status().isBadRequest());
+    }
+
 }
