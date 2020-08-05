@@ -91,7 +91,14 @@ class RsControllerTest {
     @Order(4)
     void should_add_the_given_event_into_event_list() throws Exception {
         mockMvc.perform(get("/rs/getEventList")).andExpect(jsonPath("$", hasSize(3)));
-        String jsonStringOfNewEvent = "{\"name\": \"收割股民\", \"keyword\": \"民生\"}";
+        String jsonStringOfNewEvent = "{\"name\":\"收割股民\", " +
+                "\"keyword\":\"民生\", " +
+                "\"user\": " +
+                "{\"userName\":\"root\", " +
+                "\"age\": 20, " +
+                "\"gender\": \"male\", " +
+                "\"email\": \"root@thoughtworks.com\", " +
+                "\"phone\": \"12345678901\"}}";
         mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfNewEvent))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEventList")).andExpect(jsonPath("$", hasSize(4)));
@@ -172,6 +179,40 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.user.gender", is("male")))
                 .andExpect(jsonPath("$.user.email", is("root@thoughtworks.com")))
                 .andExpect(jsonPath("$.user.phone", is("12345678901")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(10)
+    void should_add_the_event_and_user_into_respective_list() throws Exception {
+        mockMvc.perform(get("/rs/getUser?username=user3"))
+                .andExpect(jsonPath("$").doesNotExist())
+                .andExpect(status().isOk());
+        String jsonStringOfRsEvent = "{\"name\":\"电影院复工\", " +
+                "\"keyword\":\"娱乐\", " +
+                "\"user\": " +
+                "{\"userName\":\"user3\", " +
+                "\"age\": 25, " +
+                "\"gender\": \"male\", " +
+                "\"email\": \"user3@thoughtworks.com\", " +
+                "\"phone\": \"12345678904\"}}";
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getEvent?id=5"))
+                .andExpect(jsonPath("$.name", is("电影院复工")))
+                .andExpect(jsonPath("$.keyword", is("娱乐")))
+                .andExpect(jsonPath("$.user.userName", is("user3")))
+                .andExpect(jsonPath("$.user.age", is(25)))
+                .andExpect(jsonPath("$.user.gender", is("male")))
+                .andExpect(jsonPath("$.user.email", is("user3@thoughtworks.com")))
+                .andExpect(jsonPath("$.user.phone", is("12345678904")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getUser?username=user3"))
+                .andExpect(jsonPath("$.userName", is("user3")))
+                .andExpect(jsonPath("$.age", is(25)))
+                .andExpect(jsonPath("$.gender", is("male")))
+                .andExpect(jsonPath("$.email", is("user3@thoughtworks.com")))
+                .andExpect(jsonPath("$.phone", is("12345678904")))
                 .andExpect(status().isOk());
     }
 

@@ -2,6 +2,8 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.RsEvent;
 import com.thoughtworks.rslist.bean.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
@@ -9,6 +11,10 @@ import java.util.List;
 
 @RestController
 public class RsController {
+
+  @Autowired
+  private ApplicationContext appContext;
+
   private final List<RsEvent> rsList = new LinkedList<>();
 
   public RsController() {
@@ -35,6 +41,10 @@ public class RsController {
 
   @PostMapping("/rs/addEvent")
   public void addEvent(@RequestBody RsEvent rsEvent) {
+    UserController userController = appContext.getBean(UserController.class);
+    if (userController.getUserByUsername(rsEvent.getUser().getUserName()) == null) {
+      userController.addNewUser(rsEvent.getUser());
+    }
     rsList.add(rsEvent);
   }
 
