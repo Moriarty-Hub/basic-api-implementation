@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.api;
 
-import com.thoughtworks.rslist.bean.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +38,34 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[2].gender", is("male")))
                 .andExpect(jsonPath("$[2].email", is("user2@thoughtworks.com")))
                 .andExpect(jsonPath("$[2].phone", is("12345678903")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_return_user_by_username() throws Exception {
+        mockMvc.perform(get("/rs/getUser?username=root"))
+                .andExpect(jsonPath("$.userName", is("root")))
+                .andExpect(jsonPath("$.age", is(20)))
+                .andExpect(jsonPath("$.gender", is("male")))
+                .andExpect(jsonPath("$.email", is("root@thoughtworks.com")))
+                .andExpect(jsonPath("$.phone", is("12345678901")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getUser?username=user1"))
+                .andExpect(jsonPath("$.userName", is("user1")))
+                .andExpect(jsonPath("$.age", is(30)))
+                .andExpect(jsonPath("$.gender", is("female")))
+                .andExpect(jsonPath("$.email", is("user1@thoughtworks.com")))
+                .andExpect(jsonPath("$.phone", is("12345678902")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getUser?username=user2"))
+                .andExpect(jsonPath("$.userName", is("user2")))
+                .andExpect(jsonPath("$.age", is(40)))
+                .andExpect(jsonPath("$.gender", is("male")))
+                .andExpect(jsonPath("$.email", is("user2@thoughtworks.com")))
+                .andExpect(jsonPath("$.phone", is("12345678903")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getUser?username=user0"))
+                .andExpect(jsonPath("$").doesNotExist())
                 .andExpect(status().isOk());
     }
 }

@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.LinkedList;
@@ -24,5 +25,15 @@ public class UserController {
     @GetMapping("/rs/getAllUsers")
     public List<User> getEntireUserList() {
         return userList;
+    }
+
+    @GetMapping("/rs/getUser")
+    public User getUserByUsername(@RequestParam String username) {
+        for (User user : userList) {
+            if (user.getUserName().equals(username)) {
+                return user;
+            }
+        }
+        return null;
     }
 }
