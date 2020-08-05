@@ -6,18 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import javax.validation.constraints.*;
 
 public class User {
-    @NotNull
-    @Size(max = 8)
+    @NotNull(message = "invalid user")
+    @Size(max = 8, message = "invalid user")
     private String userName;
-    @Min(18)
-    @Max(100)
+    @Min(value = 18, message = "invalid user")
+    @Max(value = 100, message = "invalid user")
     private int age;
-    @NotNull
+    @NotNull(message = "invalid user")
     private String gender;
-    @Email
+    @Email(message = "invalid user")
     private String email;
-    @NotNull
-    @Pattern(regexp = "1\\d{10}")
+    @NotNull(message = "invalid user")
+    @Pattern(regexp = "1\\d{10}", message = "invalid user")
     private String phone;
 
     public User(String userName, int age, String gender, String email, String phone) {

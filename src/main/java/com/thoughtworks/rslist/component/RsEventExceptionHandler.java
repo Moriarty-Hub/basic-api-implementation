@@ -18,8 +18,10 @@ public class RsEventExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Error> definedRuleExceptionHandler() {
-        Error error = new Error("invalid param");
+    public ResponseEntity<Error> definedRuleExceptionHandler(Exception exception) {
+        String errorMessage = exception.getMessage();
+        Error error = new Error(errorMessage
+                .substring(errorMessage.lastIndexOf("default message [") + 17, errorMessage.length() - 3));
         return ResponseEntity.badRequest().body(error);
     }
 }

@@ -213,4 +213,41 @@ public class UserControllerTest {
                 "\"user_phone\":\"12345678904\"}]";
         assertEquals(expectedJsonStringOfUserList, mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
     }
+
+    @Test
+    @Order(13)
+    void should_throw_an_exception_when_parameters_not_meet_the_requirement() throws Exception {
+        User user1 = new User("user55555", 35, "female", "user5@thoughtworks.com", "12345678906");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfUser1 = objectMapper.writeValueAsString(user1);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser1))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
+
+        User user2 = new User("user5", 16, "female", "user5@thoughtworks.com", "12345678906");
+        String jsonStringOfUser2 = objectMapper.writeValueAsString(user2);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser2))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
+
+        User user3 = new User("user5", 35, null, "user5@thoughtworks.com", "12345678906");
+        String jsonStringOfUser3 = objectMapper.writeValueAsString(user3);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser3))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
+
+        User user4 = new User("user5", 35, "female", "user5thoughtworks.com", "12345678906");
+        String jsonStringOfUser4 = objectMapper.writeValueAsString(user4);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser4))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
+
+        User user5 = new User("user5", 35, "female", "user5@thoughtworks.com", "312345678906");
+        String jsonStringOfUser5 = objectMapper.writeValueAsString(user5);
+        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser5))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
+    }
+
+
 }
