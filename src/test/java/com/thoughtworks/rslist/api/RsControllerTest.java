@@ -290,4 +290,37 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.error", is("invalid index")));
     }
 
+    @Test
+    @Order(16)
+    void should_throw_an_exception_when_rs_event_parameters_not_meet_requirements() throws Exception {
+        String jsonStringOfRsEvent1 = "{\"keyword\":\"经济\", " +
+                "\"user\": " +
+                "{\"userName\":\"user3\", " +
+                "\"age\": 25, " +
+                "\"gender\": \"male\", " +
+                "\"email\": \"user3@thoughtworks.com\", " +
+                "\"phone\": \"12345678904\"}}";
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent1))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+
+        String jsonStringOfRsEvent2 = "{\"name\":\"复工复产\", " +
+                "\"user\": " +
+                "{\"userName\":\"user3\", " +
+                "\"age\": 25, " +
+                "\"gender\": \"male\", " +
+                "\"email\": \"user3@thoughtworks.com\", " +
+                "\"phone\": \"12345678904\"}}";
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent2))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+
+        String jsonStringOfRsEvent3 = "{\"name\":\"复工复产\", " +
+                "\"keyword\":\"经济\"}";
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent3))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+
+    }
+
 }
