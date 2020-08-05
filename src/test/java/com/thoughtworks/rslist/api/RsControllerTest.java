@@ -279,4 +279,15 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.error", is("invalid request param")));
     }
 
+    @Test
+    @Order(15)
+    void should_throw_an_exception_when_index_out_of_boundary() throws Exception {
+        mockMvc.perform(get("/rs/getEvent?id=0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid index")));
+        mockMvc.perform(get("/rs/getEvent?id=20"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid index")));
+    }
+
 }

@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.RsEvent;
 import com.thoughtworks.rslist.bean.User;
+import com.thoughtworks.rslist.exception.IndexOutOfBoundary;
 import com.thoughtworks.rslist.exception.StartOrEndParamOutOfBoundary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
