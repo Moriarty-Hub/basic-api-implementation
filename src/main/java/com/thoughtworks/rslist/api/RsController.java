@@ -33,11 +33,11 @@ public class RsController {
   }
 
   @GetMapping("/rs/getEventList")
-  public List<RsEvent> getEventListOfSpecifiedRange(@RequestParam (required = false) Integer start, @RequestParam (required = false) Integer end) {
+  public ResponseEntity<List<RsEvent>> getEventListOfSpecifiedRange(@RequestParam (required = false) Integer start, @RequestParam (required = false) Integer end) {
     if (start != null && end != null) {
-      return rsList.subList(start - 1, end);
+      return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
-    return rsList;
+    return ResponseEntity.ok(rsList);
   }
 
   @PostMapping("/rs/addEvent")

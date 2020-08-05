@@ -22,15 +22,15 @@ public class UserController {
     }
 
     @GetMapping("/rs/getAllUsers")
-    public List<User> getEntireUserList() {
-        return userList;
+    public ResponseEntity<List<User>> getEntireUserList() {
+        return ResponseEntity.ok(userList);
     }
 
     @GetMapping("/rs/getUser")
-    public User getUserByUsername(@RequestParam String username) {
+    public ResponseEntity<User> getUserByUsername(@RequestParam String username) {
         for (User user : userList) {
             if (user.getUserName().equals(username)) {
-                return user;
+                return ResponseEntity.ok(user);
             }
         }
         return null;

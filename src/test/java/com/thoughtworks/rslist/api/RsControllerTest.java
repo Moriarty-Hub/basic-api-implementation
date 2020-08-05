@@ -48,7 +48,7 @@ class RsControllerTest {
     @Test
     @Order(2)
     void should_return_rs_event_list_between_specified_range() throws Exception {
-        mockMvc.perform(get("/rs/getEventList?start=1&end=3"))
+        MvcResult mvcResult1 = mockMvc.perform(get("/rs/getEventList?start=1&end=3"))
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].name", is("美股熔断")))
                 .andExpect(jsonPath("$[0].keyword", is("经济")))
@@ -56,21 +56,33 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[1].keyword", is("军事")))
                 .andExpect(jsonPath("$[2].name", is("示威活动")))
                 .andExpect(jsonPath("$[2].keyword", is("自由")))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/getEventList?start=1&end=2"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String expectedJsonString1 = "[{\"name\":\"美股熔断\",\"keyword\":\"经济\"}," +
+                "{\"name\":\"边境冲突\",\"keyword\":\"军事\"}," +
+                "{\"name\":\"示威活动\",\"keyword\":\"自由\"}]";
+        assertEquals(expectedJsonString1, mvcResult1.getResponse().getContentAsString(StandardCharsets.UTF_8));
+        MvcResult mvcResult2 = mockMvc.perform(get("/rs/getEventList?start=1&end=2"))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name", is("美股熔断")))
                 .andExpect(jsonPath("$[0].keyword", is("经济")))
                 .andExpect(jsonPath("$[1].name", is("边境冲突")))
                 .andExpect(jsonPath("$[1].keyword", is("军事")))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/getEventList?start=2&end=3"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String expectedJsonString2 = "[{\"name\":\"美股熔断\",\"keyword\":\"经济\"}," +
+                "{\"name\":\"边境冲突\",\"keyword\":\"军事\"}]";
+        assertEquals(expectedJsonString2, mvcResult2.getResponse().getContentAsString(StandardCharsets.UTF_8));
+        MvcResult mvcResult3 = mockMvc.perform(get("/rs/getEventList?start=2&end=3"))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name", is("边境冲突")))
                 .andExpect(jsonPath("$[0].keyword", is("军事")))
                 .andExpect(jsonPath("$[1].name", is("示威活动")))
                 .andExpect(jsonPath("$[1].keyword", is("自由")))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
+        String expectedJsonString3 = mvcResult3.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        assertEquals(expectedJsonString3, mvcResult3.getResponse().getContentAsString(StandardCharsets.UTF_8));
     }
 
     @Test
