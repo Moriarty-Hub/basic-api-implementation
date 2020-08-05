@@ -1,9 +1,7 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,5 +33,10 @@ public class UserController {
             }
         }
         return null;
+    }
+
+    @PostMapping("/rs/addNewUser")
+    public void addNewUser(@RequestBody User user) {
+        userList.add(user);
     }
 }
