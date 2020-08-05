@@ -3,10 +3,12 @@ package com.thoughtworks.rslist.bean;
 public class RsEvent {
     private String name;
     private String keyword;
+    private User user;
 
-    public RsEvent(String name, String keyword) {
+    public RsEvent(String name, String keyword, User user) {
         this.name = name;
         this.keyword = keyword;
+        this.user = user;
     }
 
     public String getName() {
@@ -23,5 +25,13 @@ public class RsEvent {
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
