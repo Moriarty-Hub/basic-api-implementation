@@ -1,5 +1,9 @@
 package com.thoughtworks.rslist;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.bean.RsEvent;
+import com.thoughtworks.rslist.bean.User;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -145,6 +149,29 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[1].keyword", is("暴力")))
                 .andExpect(jsonPath("$[2].name", is("收割股民")))
                 .andExpect(jsonPath("$[2].keyword", is("民生")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(9)
+    void should_add_the_rs_event_with_attached_user_into_list() throws Exception {
+        User user = new User("root", 20, "male", "root@thoughtworks.com", "12345678901");
+        RsEvent rsEvent = new RsEvent("黎巴嫩爆炸", "安全", user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStringOfRsEvent = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getEventList"))
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/getEvent?id=4"))
+                .andExpect(jsonPath("$.name", is("黎巴嫩爆炸")))
+                .andExpect(jsonPath("$.keyword", is("安全")))
+                .andExpect(jsonPath("$.user.userName", is("root")))
+                .andExpect(jsonPath("$.user.age", is(20)))
+                .andExpect(jsonPath("$.user.gender", is("male")))
+                .andExpect(jsonPath("$.user.email", is("root@thoughtworks.com")))
+                .andExpect(jsonPath("$.user.phone", is("12345678901")))
                 .andExpect(status().isOk());
     }
 
