@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.RsEvent;
 import com.thoughtworks.rslist.bean.User;
+import com.thoughtworks.rslist.exception.StartOrEndParamOutOfBoundary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,9 @@ public class RsController {
   @GetMapping("/rs/getEventList")
   public ResponseEntity<List<RsEvent>> getEventListOfSpecifiedRange(@RequestParam (required = false) Integer start, @RequestParam (required = false) Integer end) {
     if (start != null && end != null) {
+      if (start < 1 || end > rsList.size()) {
+        throw new StartOrEndParamOutOfBoundary("invalid request param");
+      }
       return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
     return ResponseEntity.ok(rsList);

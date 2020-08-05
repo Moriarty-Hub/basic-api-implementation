@@ -265,4 +265,18 @@ class RsControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @Order(14)
+    void should_throw_an_exception_when_start_or_end_out_of_boundary() throws Exception {
+        mockMvc.perform(get("/rs/getEventList?start=0&&end=3"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+        mockMvc.perform(get("/rs/getEventList?start=2&&end=8"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+        mockMvc.perform(get("/rs/getEventList?start=-1&&end=10"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
 }
