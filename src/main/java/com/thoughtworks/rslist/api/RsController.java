@@ -10,17 +10,13 @@ import java.util.List;
 @RestController
 public class RsController {
   private final List<RsEvent> rsList = new LinkedList<>();
-  private final List<User> userList = new LinkedList<>();
 
   public RsController() {
     User root = new User("root", 20, "male", "root@thoughtworks.com", "12345678901");
     User user1 = new User("user1", 30, "female", "user1@thoughtworks.com", "12345678902");
     User user2 = new User("user2", 40, "male", "user2@thoughtworks.com", "12345678903");
-    userList.add(root);
-    userList.add(user1);
-    userList.add(user2);
     rsList.add(new RsEvent("美股熔断", "经济", user1));
-    rsList.add(new RsEvent("边境冲突", "军事", user1));
+    rsList.add(new RsEvent("边境冲突", "军事", root));
     rsList.add(new RsEvent("示威活动", "自由", user2));
   }
 
