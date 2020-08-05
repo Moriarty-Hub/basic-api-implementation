@@ -40,4 +40,10 @@ public class UserController {
     public void addNewUser(@RequestBody @Valid User user) {
         userList.add(user);
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<String> getUserListOfJsonFormat() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return ResponseEntity.ok(objectMapper.writeValueAsString(userList));
+    }
 }

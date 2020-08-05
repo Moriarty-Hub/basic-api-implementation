@@ -11,9 +11,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,21 +36,21 @@ public class UserControllerTest {
     void should_return_entire_user_list() throws Exception {
         mockMvc.perform(get("/rs/getAllUsers"))
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].userName", is("root")))
-                .andExpect(jsonPath("$[0].age", is(20)))
-                .andExpect(jsonPath("$[0].gender", is("male")))
-                .andExpect(jsonPath("$[0].email", is("root@thoughtworks.com")))
-                .andExpect(jsonPath("$[0].phone", is("12345678901")))
-                .andExpect(jsonPath("$[1].userName", is("user1")))
-                .andExpect(jsonPath("$[1].age", is(30)))
-                .andExpect(jsonPath("$[1].gender", is("female")))
-                .andExpect(jsonPath("$[1].email", is("user1@thoughtworks.com")))
-                .andExpect(jsonPath("$[1].phone", is("12345678902")))
-                .andExpect(jsonPath("$[2].userName", is("user2")))
-                .andExpect(jsonPath("$[2].age", is(40)))
-                .andExpect(jsonPath("$[2].gender", is("male")))
-                .andExpect(jsonPath("$[2].email", is("user2@thoughtworks.com")))
-                .andExpect(jsonPath("$[2].phone", is("12345678903")))
+                .andExpect(jsonPath("$[0].user_name", is("root")))
+                .andExpect(jsonPath("$[0].user_age", is(20)))
+                .andExpect(jsonPath("$[0].user_gender", is("male")))
+                .andExpect(jsonPath("$[0].user_email", is("root@thoughtworks.com")))
+                .andExpect(jsonPath("$[0].user_phone", is("12345678901")))
+                .andExpect(jsonPath("$[1].user_name", is("user1")))
+                .andExpect(jsonPath("$[1].user_age", is(30)))
+                .andExpect(jsonPath("$[1].user_gender", is("female")))
+                .andExpect(jsonPath("$[1].user_email", is("user1@thoughtworks.com")))
+                .andExpect(jsonPath("$[1].user_phone", is("12345678902")))
+                .andExpect(jsonPath("$[2].user_name", is("user2")))
+                .andExpect(jsonPath("$[2].user_age", is(40)))
+                .andExpect(jsonPath("$[2].user_gender", is("male")))
+                .andExpect(jsonPath("$[2].user_email", is("user2@thoughtworks.com")))
+                .andExpect(jsonPath("$[2].user_phone", is("12345678903")))
                 .andExpect(status().isOk());
     }
 
@@ -54,25 +58,25 @@ public class UserControllerTest {
     @Order(2)
     void should_return_user_by_username() throws Exception {
         mockMvc.perform(get("/rs/getUser?username=root"))
-                .andExpect(jsonPath("$.userName", is("root")))
-                .andExpect(jsonPath("$.age", is(20)))
-                .andExpect(jsonPath("$.gender", is("male")))
-                .andExpect(jsonPath("$.email", is("root@thoughtworks.com")))
-                .andExpect(jsonPath("$.phone", is("12345678901")))
+                .andExpect(jsonPath("$.user_name", is("root")))
+                .andExpect(jsonPath("$.user_age", is(20)))
+                .andExpect(jsonPath("$.user_gender", is("male")))
+                .andExpect(jsonPath("$.user_email", is("root@thoughtworks.com")))
+                .andExpect(jsonPath("$.user_phone", is("12345678901")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getUser?username=user1"))
-                .andExpect(jsonPath("$.userName", is("user1")))
-                .andExpect(jsonPath("$.age", is(30)))
-                .andExpect(jsonPath("$.gender", is("female")))
-                .andExpect(jsonPath("$.email", is("user1@thoughtworks.com")))
-                .andExpect(jsonPath("$.phone", is("12345678902")))
+                .andExpect(jsonPath("$.user_name", is("user1")))
+                .andExpect(jsonPath("$.user_age", is(30)))
+                .andExpect(jsonPath("$.user_gender", is("female")))
+                .andExpect(jsonPath("$.user_email", is("user1@thoughtworks.com")))
+                .andExpect(jsonPath("$.user_phone", is("12345678902")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getUser?username=user2"))
-                .andExpect(jsonPath("$.userName", is("user2")))
-                .andExpect(jsonPath("$.age", is(40)))
-                .andExpect(jsonPath("$.gender", is("male")))
-                .andExpect(jsonPath("$.email", is("user2@thoughtworks.com")))
-                .andExpect(jsonPath("$.phone", is("12345678903")))
+                .andExpect(jsonPath("$.user_name", is("user2")))
+                .andExpect(jsonPath("$.user_age", is(40)))
+                .andExpect(jsonPath("$.user_gender", is("male")))
+                .andExpect(jsonPath("$.user_email", is("user2@thoughtworks.com")))
+                .andExpect(jsonPath("$.user_phone", is("12345678903")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getUser?username=user0"))
                 .andExpect(jsonPath("$").doesNotExist())
@@ -93,11 +97,11 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/rs/getUser?username=user3"))
-                .andExpect(jsonPath("$.userName", is("user3")))
-                .andExpect(jsonPath("$.age", is(25)))
-                .andExpect(jsonPath("$.gender", is("male")))
-                .andExpect(jsonPath("$.email", is("user3@thoughtworks.com")))
-                .andExpect(jsonPath("$.phone", is("12345678904")))
+                .andExpect(jsonPath("$.user_name", is("user3")))
+                .andExpect(jsonPath("$.user_age", is(25)))
+                .andExpect(jsonPath("$.user_gender", is("male")))
+                .andExpect(jsonPath("$.user_email", is("user3@thoughtworks.com")))
+                .andExpect(jsonPath("$.user_phone", is("12345678904")))
                 .andExpect(status().isOk());
     }
 
@@ -179,5 +183,34 @@ public class UserControllerTest {
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(12)
+    void should_return_reformatted_json_string_of_user_list() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String expectedJsonStringOfUserList = "[{\"user_name\":\"root\"," +
+                "\"user_age\":20," +
+                "\"user_gender\":\"male\"," +
+                "\"user_email\":\"root@thoughtworks.com\"," +
+                "\"user_phone\":\"12345678901\"}," +
+                "{\"user_name\":\"user1\"," +
+                "\"user_age\":30," +
+                "\"user_gender\":\"female\"," +
+                "\"user_email\":\"user1@thoughtworks.com\"," +
+                "\"user_phone\":\"12345678902\"}," +
+                "{\"user_name\":\"user2\"," +
+                "\"user_age\":40," +
+                "\"user_gender\":\"male\"," +
+                "\"user_email\":\"user2@thoughtworks.com\"," +
+                "\"user_phone\":\"12345678903\"}," +
+                "{\"user_name\":\"user3\"," +
+                "\"user_age\":25," +
+                "\"user_gender\":\"male\"," +
+                "\"user_email\":\"user3@thoughtworks.com\"," +
+                "\"user_phone\":\"12345678904\"}]";
+        assertEquals(expectedJsonStringOfUserList, mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
     }
 }

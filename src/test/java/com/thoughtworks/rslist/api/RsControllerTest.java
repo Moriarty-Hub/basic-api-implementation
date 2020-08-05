@@ -220,11 +220,11 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.user.phone", is("12345678904")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getUser?username=user3"))
-                .andExpect(jsonPath("$.userName", is("user3")))
-                .andExpect(jsonPath("$.age", is(25)))
-                .andExpect(jsonPath("$.gender", is("male")))
-                .andExpect(jsonPath("$.email", is("user3@thoughtworks.com")))
-                .andExpect(jsonPath("$.phone", is("12345678904")))
+                .andExpect(jsonPath("$.user_name", is("user3")))
+                .andExpect(jsonPath("$.user_age", is(25)))
+                .andExpect(jsonPath("$.user_gender", is("male")))
+                .andExpect(jsonPath("$.user_email", is("user3@thoughtworks.com")))
+                .andExpect(jsonPath("$.user_phone", is("12345678904")))
                 .andExpect(status().isOk());
     }
 
