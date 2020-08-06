@@ -3,11 +3,11 @@ package com.thoughtworks.rslist.bean;
 import javax.validation.constraints.NotNull;
 
 public class RsEvent {
-    @NotNull
+    @NotNull(message = "invalid param")
     private String name;
-    @NotNull
+    @NotNull(message = "invalid param")
     private String keyword;
-    @NotNull
+    @NotNull(message = "invalid param")
     private User user;
 
     public RsEvent(String name, String keyword, User user) {
