@@ -1,9 +1,9 @@
 package com.thoughtworks.rslist.repository;
 
-import com.thoughtworks.rslist.bean.User;
 import com.thoughtworks.rslist.dto.UserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,9 +34,10 @@ public class UserRepositoryTest {
     }
 
     @Test
+    @Order(1)
     void should_save_user_into_database() {
         UserDto userDto = new UserDto("newUser", 36, "male", "newUser@thoughtworks.com", "12345678909");
-        int id = 4;
+        int id = 7;
 
         assertFalse(userRepository.findById(id).isPresent());
         userRepository.save(userDto);
@@ -44,5 +45,17 @@ public class UserRepositoryTest {
         Optional<UserDto> optionalUserDto = userRepository.findById(id);
         assertTrue(optionalUserDto.isPresent());
         assertEquals(userDto.toString(), optionalUserDto.get().toString());
+    }
+
+    @Test
+    @Order(2)
+    void should_delete_user_by_id() {
+        assertTrue(userRepository.findById(3).isPresent());
+        userRepository.deleteById(3);
+        assertFalse(userRepository.findById(3).isPresent());
+
+        assertTrue(userRepository.findById(2).isPresent());
+        userRepository.deleteById(2);
+        assertFalse(userRepository.findById(2).isPresent());
     }
 }
