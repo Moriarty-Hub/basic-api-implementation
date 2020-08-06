@@ -20,8 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -94,8 +93,8 @@ public class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
-                .andExpect(status().isOk());
-
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index", "4"));
         mockMvc.perform(get("/rs/getUser?username=user3"))
                 .andExpect(jsonPath("$.user_name", is("user3")))
                 .andExpect(jsonPath("$.user_age", is(25)))

@@ -6,6 +6,8 @@ import com.thoughtworks.rslist.exception.IndexOutOfBoundary;
 import com.thoughtworks.rslist.exception.StartOrEndParamOutOfBoundary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,8 +32,11 @@ public class RsController {
   }
 
   @GetMapping("/rs/getEvent")
-  public RsEvent getEvent(@RequestParam int id) {
-    return rsList.get(id - 1);
+  public ResponseEntity<RsEvent> getEvent(@RequestParam int id) {
+    if (id < 1 || id > rsList.size()) {
+      throw new IndexOutOfBoundary("invalid index");
+    }
+    return ResponseEntity.ok(rsList.get(id - 1));
   }
 
   @GetMapping("/rs/getEventList")
@@ -46,16 +51,17 @@ public class RsController {
   }
 
   @PostMapping("/rs/addEvent")
-  public void addEvent(@RequestBody @Valid RsEvent rsEvent) {
+  public ResponseEntity<String> addEvent(@RequestBody @Valid RsEvent rsEvent) {
     UserController userController = appContext.getBean(UserController.class);
     if (userController.getUserByUsername(rsEvent.getUser().getUserName()) == null) {
       userController.addNewUser(rsEvent.getUser());
     }
     rsList.add(rsEvent);
+    return ResponseEntity.created(null).header("index", String.valueOf(rsList.size())).build();
   }
 
   @GetMapping("/rs/updateEvent")
-  public void updateEvent(@RequestParam int id, @RequestParam (required = false) String name,
+  public ResponseEntity<String> updateEvent(@RequestParam int id, @RequestParam (required = false) String name,
                           @RequestParam (required = false) String keyword) {
     if (name != null) {
       rsList.get(id - 1).setName(name);
@@ -63,6 +69,7 @@ public class RsController {
     if (keyword != null) {
       rsList.get(id - 1).setKeyword(keyword);
     }
+    return ResponseEntity.ok().build();
   }
 
   @GetMapping("/rs/deleteEvent")

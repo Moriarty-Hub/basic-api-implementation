@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.bean.RsEvent;
 import com.thoughtworks.rslist.bean.User;
@@ -12,13 +13,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,18 +35,29 @@ class RsControllerTest {
     @Test
     @Order(1)
     void should_return_rs_event_of_specified_index() throws Exception {
-        mockMvc.perform(get("/rs/getEvent?id=1"))
+        MvcResult mvcResult1 = mockMvc.perform(get("/rs/getEvent?id=1"))
                 .andExpect(jsonPath("$.name", is("美股熔断")))
                 .andExpect(jsonPath("$.keyword", is("经济")))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/getEvent?id=2"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String expectedJsonString1 = "{\"name\":\"美股熔断\",\"keyword\":\"经济\"}";
+        assertEquals(expectedJsonString1, mvcResult1.getResponse().getContentAsString(StandardCharsets.UTF_8));
+
+        MvcResult mvcResult2 = mockMvc.perform(get("/rs/getEvent?id=2"))
                 .andExpect(jsonPath("$.name", is("边境冲突")))
                 .andExpect(jsonPath("$.keyword", is("军事")))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/getEvent?id=3"))
+                .andExpect(status().isOk())
+                .andReturn();
+        String expectedJsonString2 = "{\"name\":\"边境冲突\",\"keyword\":\"军事\"}";
+        assertEquals(expectedJsonString2, mvcResult2.getResponse().getContentAsString(StandardCharsets.UTF_8));
+
+        MvcResult mvcResult3 = mockMvc.perform(get("/rs/getEvent?id=3"))
                 .andExpect(jsonPath("$.name", is("示威活动")))
                 .andExpect(jsonPath("$.keyword", is("自由")))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
+        String expectedJsonString3 = "{\"name\":\"示威活动\",\"keyword\":\"自由\"}";
+        assertEquals(expectedJsonString3, mvcResult3.getResponse().getContentAsString(StandardCharsets.UTF_8));
     }
 
     @Test
@@ -112,7 +127,8 @@ class RsControllerTest {
                 "\"email\": \"root@thoughtworks.com\", " +
                 "\"phone\": \"12345678901\"}}";
         mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfNewEvent))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index", "4"));
         mockMvc.perform(get("/rs/getEventList")).andExpect(jsonPath("$", hasSize(4)));
         mockMvc.perform(get("/rs/getEvent?id=4"))
                 .andExpect(jsonPath("$.name", is("收割股民")))
@@ -124,7 +140,8 @@ class RsControllerTest {
     @Order(5)
     void should_update_event_when_name_was_given() throws Exception {
         mockMvc.perform(get("/rs/getEvent?id=2"))
-                .andExpect(jsonPath("$.name", is("边境冲突")));
+                .andExpect(jsonPath("$.name", is("边境冲突")))
+                .andExpect(status().isOk());
         mockMvc.perform(get("/rs/updateEvent?id=2&name=收复台湾"))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEvent?id=2"))
@@ -177,20 +194,17 @@ class RsControllerTest {
         User user = new User("root", 20, "male", "root@thoughtworks.com", "12345678901");
         RsEvent rsEvent = new RsEvent("黎巴嫩爆炸", "安全", user);
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         String jsonStringOfRsEvent = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index", "4"));
         mockMvc.perform(get("/rs/getEventList"))
                 .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEvent?id=4"))
                 .andExpect(jsonPath("$.name", is("黎巴嫩爆炸")))
                 .andExpect(jsonPath("$.keyword", is("安全")))
-                .andExpect(jsonPath("$.user.userName", is("root")))
-                .andExpect(jsonPath("$.user.age", is(20)))
-                .andExpect(jsonPath("$.user.gender", is("male")))
-                .andExpect(jsonPath("$.user.email", is("root@thoughtworks.com")))
-                .andExpect(jsonPath("$.user.phone", is("12345678901")))
                 .andExpect(status().isOk());
     }
 
@@ -209,15 +223,11 @@ class RsControllerTest {
                 "\"email\": \"user3@thoughtworks.com\", " +
                 "\"phone\": \"12345678904\"}}";
         mockMvc.perform(post("/rs/addEvent").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfRsEvent))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index", "5"));
         mockMvc.perform(get("/rs/getEvent?id=5"))
                 .andExpect(jsonPath("$.name", is("电影院复工")))
                 .andExpect(jsonPath("$.keyword", is("娱乐")))
-                .andExpect(jsonPath("$.user.userName", is("user3")))
-                .andExpect(jsonPath("$.user.age", is(25)))
-                .andExpect(jsonPath("$.user.gender", is("male")))
-                .andExpect(jsonPath("$.user.email", is("user3@thoughtworks.com")))
-                .andExpect(jsonPath("$.user.phone", is("12345678904")))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getUser?username=user3"))
                 .andExpect(jsonPath("$.user_name", is("user3")))

@@ -1,6 +1,9 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.bean.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -37,8 +40,9 @@ public class UserController {
     }
 
     @PostMapping("/rs/addNewUser")
-    public void addNewUser(@RequestBody @Valid User user) {
+    public ResponseEntity<String> addNewUser(@RequestBody @Valid User user) {
         userList.add(user);
+        return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
     }
 
     @GetMapping("/users")
