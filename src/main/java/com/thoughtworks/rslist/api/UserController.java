@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -31,12 +32,8 @@ public class UserController {
 
     @GetMapping("/rs/getUser")
     public ResponseEntity<User> getUserByUsername(@RequestParam String username) {
-        for (User user : userList) {
-            if (user.getUserName().equals(username)) {
-                return ResponseEntity.ok(user);
-            }
-        }
-        return null;
+        Optional<User> optionalUser = userList.stream().filter(user -> user.getUserName().equals(username)).findFirst();
+        return optionalUser.map(ResponseEntity::ok).orElse(null);
     }
 
     @PostMapping("/rs/addNewUser")

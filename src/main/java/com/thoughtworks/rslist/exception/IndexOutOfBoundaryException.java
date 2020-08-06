@@ -1,10 +1,12 @@
 package com.thoughtworks.rslist.exception;
 
-public class StartOrEndParamOutOfBoundary extends RuntimeException {
+import javax.persistence.criteria.CriteriaBuilder;
+
+public class IndexOutOfBoundaryException extends RuntimeException {
 
     private String errorMessage;
 
-    public StartOrEndParamOutOfBoundary(String errorMessage) {
+    public IndexOutOfBoundaryException(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 

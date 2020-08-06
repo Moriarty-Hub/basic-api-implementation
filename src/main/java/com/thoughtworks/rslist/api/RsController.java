@@ -2,11 +2,10 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.RsEvent;
 import com.thoughtworks.rslist.bean.User;
-import com.thoughtworks.rslist.exception.IndexOutOfBoundary;
-import com.thoughtworks.rslist.exception.StartOrEndParamOutOfBoundary;
+import com.thoughtworks.rslist.exception.IndexOutOfBoundaryException;
+import com.thoughtworks.rslist.exception.StartOrEndParamOutOfBoundaryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +33,7 @@ public class RsController {
   @GetMapping("/rs/getEvent")
   public ResponseEntity<RsEvent> getEvent(@RequestParam int id) {
     if (id < 1 || id > rsList.size()) {
-      throw new IndexOutOfBoundary("invalid index");
+      throw new IndexOutOfBoundaryException("invalid index");
     }
     return ResponseEntity.ok(rsList.get(id - 1));
   }
@@ -43,7 +42,7 @@ public class RsController {
   public ResponseEntity<List<RsEvent>> getEventListOfSpecifiedRange(@RequestParam (required = false) Integer start, @RequestParam (required = false) Integer end) {
     if (start != null && end != null) {
       if (start < 1 || end > rsList.size()) {
-        throw new StartOrEndParamOutOfBoundary("invalid request param");
+        throw new StartOrEndParamOutOfBoundaryException("invalid request param");
       }
       return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
