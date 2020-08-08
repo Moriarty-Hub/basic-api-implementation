@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.exception.*;
 import com.thoughtworks.rslist.exception.Error;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -34,6 +35,12 @@ public class RsEventExceptionHandler {
     @ExceptionHandler(UnmatchedUserIdException.class)
     public ResponseEntity<Error> unmatchedUserIdExceptionHandler(UnmatchedUserIdException unmatchedUserIdException) {
         Error error = new Error(unmatchedUserIdException.getMessage());
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Error> missingServletRequestParameterExceptionHandler() {
+        Error error = new Error("invalid param");
         return ResponseEntity.badRequest().body(error);
     }
 }

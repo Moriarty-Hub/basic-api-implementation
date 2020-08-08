@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -40,13 +41,16 @@ public class RsController {
   }
 
   @PostMapping("/rs/addEvent")
-  public ResponseEntity<String> addEvent(@RequestBody @Valid RsEvent rsEvent) {
+  public ResponseEntity<String> addEvent(@RequestParam String name, @RequestParam String keyword, @RequestParam Integer userId) {
+    RsEvent rsEvent = new RsEvent(name, keyword, userId);
     int index = rsService.addEvent(rsEvent);
     return ResponseEntity.created(null).header("index", String.valueOf(index)).build();
   }
 
   @PatchMapping("/rs/{rsEventId}")
-  public ResponseEntity<String> updateEvent(@PathVariable int rsEventId, @RequestBody RsEvent rsEvent) {
+  public ResponseEntity<String> updateEvent(@PathVariable int rsEventId, @RequestParam (required = false) String name,
+                                            @RequestParam (required = false) String keyword, @RequestParam Integer userId) {
+    RsEvent rsEvent = new RsEvent(name, keyword, userId);
     rsService.updateEvent(rsEventId, rsEvent);
     return ResponseEntity.ok().build();
   }

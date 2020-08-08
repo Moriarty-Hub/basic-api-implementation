@@ -58,16 +58,19 @@ public class RsServiceTest {
         RsEvent rsEvent1 = rsService.getEvent(INITIAL_GENERATED_VALUE + 1);
         assertEquals("name1", rsEvent1.getName());
         assertEquals("keyword1", rsEvent1.getKeyword());
+        assertEquals(0, rsEvent1.getVoteNum());
         assertEquals(1, rsEvent1.getUserId());
 
         RsEvent rsEvent2 = rsService.getEvent(INITIAL_GENERATED_VALUE + 2);
         assertEquals("name2", rsEvent2.getName());
         assertEquals("keyword2", rsEvent2.getKeyword());
+        assertEquals(0, rsEvent2.getVoteNum());
         assertEquals(2, rsEvent2.getUserId());
 
         RsEvent rsEvent3 = rsService.getEvent(INITIAL_GENERATED_VALUE + 3);
         assertEquals("name3", rsEvent3.getName());
         assertEquals("keyword3", rsEvent3.getKeyword());
+        assertEquals(0, rsEvent3.getVoteNum());
         assertEquals(3, rsEvent3.getUserId());
     }
 
@@ -80,12 +83,15 @@ public class RsServiceTest {
         assertEquals(3, wholeRsEventList1.size());
         assertEquals("name1", wholeRsEventList1.get(0).getName());
         assertEquals("keyword1", wholeRsEventList1.get(0).getKeyword());
+        assertEquals(0, wholeRsEventList1.get(0).getVoteNum());
         assertEquals(1, wholeRsEventList1.get(0).getUserId());
         assertEquals("name2", wholeRsEventList1.get(1).getName());
         assertEquals("keyword2", wholeRsEventList1.get(1).getKeyword());
+        assertEquals(0, wholeRsEventList1.get(1).getVoteNum());
         assertEquals(2, wholeRsEventList1.get(1).getUserId());
         assertEquals("name3", wholeRsEventList1.get(2).getName());
         assertEquals("keyword3", wholeRsEventList1.get(2).getKeyword());
+        assertEquals(0, wholeRsEventList1.get(2).getVoteNum());
         assertEquals(3, wholeRsEventList1.get(2).getUserId());
         assertEquals(wholeRsEventList1.toString(), wholeRsEventList2.toString());
         assertEquals(wholeRsEventList1.toString(), wholeRsEventList3.toString());
@@ -106,9 +112,11 @@ public class RsServiceTest {
         assertEquals(2, subList1.size());
         assertEquals("name1", subList1.get(0).getName());
         assertEquals("keyword1", subList1.get(0).getKeyword());
+        assertEquals(0, subList1.get(0).getVoteNum());
         assertEquals(1, subList1.get(0).getUserId());
         assertEquals("name2", subList1.get(1).getName());
         assertEquals("keyword2", subList1.get(1).getKeyword());
+        assertEquals(0, subList1.get(1).getVoteNum());
         assertEquals(2, subList1.get(1).getUserId());
     }
 
@@ -123,6 +131,7 @@ public class RsServiceTest {
         assertEquals("name4", addedRsEvent.getName());
         assertEquals("keyword4", addedRsEvent.getKeyword());
         assertEquals(3, addedRsEvent.getUserId());
+        assertEquals(0, addedRsEvent.getVoteNum());
     }
 
     @Test

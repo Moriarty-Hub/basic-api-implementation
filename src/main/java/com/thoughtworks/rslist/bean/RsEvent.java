@@ -9,11 +9,20 @@ public class RsEvent {
     private String keyword;
     @NotNull(message = "invalid param")
     private Integer userId;
+    private Integer voteNum;
 
     public RsEvent(String name, String keyword, Integer userId) {
         this.name = name;
         this.keyword = keyword;
         this.userId = userId;
+        voteNum = 0;
+    }
+
+    public RsEvent(String name, String keyword, Integer userId, Integer voteNum) {
+        this.name = name;
+        this.keyword = keyword;
+        this.userId = userId;
+        this.voteNum =voteNum;
     }
 
     public String getName() {
@@ -40,12 +49,21 @@ public class RsEvent {
         this.userId = userId;
     }
 
+    public Integer getVoteNum() {
+        return voteNum;
+    }
+
+    public void setVoteNum(Integer voteNum) {
+        this.voteNum = voteNum;
+    }
+
     @Override
     public String toString() {
         return "RsEvent{" +
                 "name='" + name + '\'' +
                 ", keyword='" + keyword + '\'' +
                 ", userId=" + userId +
+                ", voteNum=" + voteNum +
                 '}';
     }
 }

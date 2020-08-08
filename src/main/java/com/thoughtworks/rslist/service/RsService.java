@@ -8,6 +8,7 @@ import com.thoughtworks.rslist.exception.UserNotExistException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +31,8 @@ public class RsService {
         Optional<RsEventDto> optionalRsEventDto = rsEventRepository.findById(id);
         if (optionalRsEventDto.isPresent()) {
             RsEventDto rsEventDto = optionalRsEventDto.get();
-            return new RsEvent(rsEventDto.getName(), rsEventDto.getKeyword(), rsEventDto.getUserDto().getId());
+            return new RsEvent(rsEventDto.getName(), rsEventDto.getKeyword(), rsEventDto.getUserDto().getId(),
+                    rsEventDto.getVoteNum());
         }
         return null;
     }
@@ -39,7 +41,7 @@ public class RsService {
         List<RsEventDto> rsEventDtoList = rsEventRepository.findAll();
         List<RsEvent> rsEventList = new LinkedList<>();
         rsEventDtoList.forEach(rsEventDto -> rsEventList.add(new RsEvent(rsEventDto.getName(), rsEventDto.getKeyword(),
-                rsEventDto.getUserDto().getId())));
+                rsEventDto.getUserDto().getId(), rsEventDto.getVoteNum())));
         if (start == null || end == null) {
             return rsEventList;
         }
@@ -50,6 +52,9 @@ public class RsService {
     }
 
     public int addEvent(RsEvent rsEvent) {
+/*        if (rsEvent.getName() == null || rsEvent.getKeyword() == null || rsEvent.getUserId() == null) {
+            throw new NullParamException("invalid param");
+        }*/
         int userId = rsEvent.getUserId();
         Optional<UserDto> optionalUserDto = userRepository.findById(userId);
         if (!optionalUserDto.isPresent()) {
