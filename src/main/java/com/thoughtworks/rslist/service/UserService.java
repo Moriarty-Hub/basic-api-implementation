@@ -3,6 +3,8 @@ package com.thoughtworks.rslist.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.bean.User;
+import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -12,33 +14,47 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final List<User> userList = new LinkedList<>();
+    private final UserRepository userRepository;
 
-    public UserService() {
-        User root = new User("root", 20, "male", "root@thoughtworks.com", "12345678901");
-        User testUser1 = new User("user1", 30, "female", "user1@thoughtworks.com", "12345678902");
-        User testUser2 = new User("user2", 40, "male", "user2@thoughtworks.com", "12345678903");
-        userList.add(root);
-        userList.add(testUser1);
-        userList.add(testUser2);
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public int addNewUser(User user) {
-        userList.add(user);
-        return userList.size();
+        UserDto userDto = userRepository.save(new UserDto(user.getUserName(), user.getAge(), user.getGender(), user.getEmail(), user.getPhone()));
+        return userDto.getId();
     }
 
     public User getUserByUsername(String username) {
-        Optional<User> optionalUser = userList.stream().filter(user -> user.getUserName().equals(username)).findFirst();
-        return optionalUser.orElse(null);
+        List<UserDto> userDtoList = userRepository.findAll();
+        for (UserDto userDto : userDtoList) {
+            if (userDto.getUsername().equals(username)) {
+                return new User(userDto.getUsername(), userDto.getAge(), userDto.getGender(), userDto.getEmail(), userDto.getPhone());
+            }
+        }
+        return null;
     }
 
     public List<User> getUserList() {
-        return userList;
+        List<User> returnedList = new LinkedList<>();
+        List<UserDto> userDtoList = userRepository.findAll();
+        for (UserDto userDto : userDtoList) {
+            returnedList.add(new User(userDto.getUsername(), userDto.getAge(), userDto.getGender(), userDto.getEmail(), userDto.getPhone()));
+        }
+        return returnedList;
     }
 
     public String getUserListOfJsonFormat() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(userList);
+        return objectMapper.writeValueAsString(getUserList());
+    }
+
+    public User getUserByUserId(int id) {
+        Optional<UserDto> optionalUserDto = userRepository.findById(id);
+        if (optionalUserDto.isPresent()) {
+            UserDto userDto = optionalUserDto.get();
+            return new User(userDto.getUsername(), userDto.getAge(), userDto.getGender(), userDto.getEmail(), userDto.getPhone());
+        }
+        return null;
     }
 }

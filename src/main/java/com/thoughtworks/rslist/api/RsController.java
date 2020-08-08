@@ -1,17 +1,13 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.RsEvent;
-import com.thoughtworks.rslist.bean.User;
 import com.thoughtworks.rslist.exception.IndexOutOfBoundaryException;
 import com.thoughtworks.rslist.exception.StartOrEndParamOutOfBoundaryException;
 import com.thoughtworks.rslist.service.RsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.LinkedList;
 import java.util.List;
 
 @RestController

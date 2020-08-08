@@ -1,7 +1,6 @@
 package com.thoughtworks.rslist.bean;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.validation.constraints.*;
 

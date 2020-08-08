@@ -1,19 +1,29 @@
-package com.thoughtworks.rslist.bean;
+package com.thoughtworks.rslist.dto;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
-public class RsEvent {
-    @NotNull(message = "invalid param")
+@Entity
+@Table(name = "rs_event")
+public class RsEventDto {
+    @Id
+    @GeneratedValue()
+    private int id;
     private String name;
-    @NotNull(message = "invalid param")
     private String keyword;
-    @NotNull(message = "invalid param")
-    private Integer userId;
+    private int userId;
 
-    public RsEvent(String name, String keyword, Integer userId) {
+    public RsEventDto() {
+
+    }
+
+    public RsEventDto(String name, String keyword, int userId) {
         this.name = name;
         this.keyword = keyword;
         this.userId = userId;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -32,20 +42,24 @@ public class RsEvent {
         this.keyword = keyword;
     }
 
-    public Integer getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
     @Override
     public String toString() {
-        return "RsEvent{" +
-                "name='" + name + '\'' +
+        return "RsEventDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", keyword='" + keyword + '\'' +
                 ", userId=" + userId +
                 '}';
     }
+
+    @ManyToOne
+    private UserDto userDtoList;
 }

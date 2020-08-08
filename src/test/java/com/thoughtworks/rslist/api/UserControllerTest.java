@@ -2,14 +2,15 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.bean.User;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.service.UserService;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -24,14 +25,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private RsEventRepository rsEventRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @BeforeEach
+    public void setUp() {
+        userService.addNewUser(new User("root", 20, "male", "root@thoughtworks.com", "12345678901"));
+        userService.addNewUser(new User("user1", 30, "female", "user1@thoughtworks.com", "12345678902"));
+        userService.addNewUser(new User("user2", 40, "male", "user2@thoughtworks.com", "12345678903"));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        userRepository.deleteAll();
+    }
+
     @Test
-    @Order(1)
     void should_return_entire_user_list() throws Exception {
         mockMvc.perform(get("/rs/getAllUsers"))
                 .andExpect(jsonPath("$", hasSize(3)))
@@ -54,7 +73,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(2)
     void should_return_user_by_username() throws Exception {
         mockMvc.perform(get("/rs/getUser?username=root"))
                 .andExpect(jsonPath("$.user_name", is("root")))
@@ -83,7 +101,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(3)
     void should_add_the_new_user_into_list() throws Exception {
         mockMvc.perform(get("/rs/getUser?username=user3"))
                 .andExpect(jsonPath("$").doesNotExist())
@@ -105,7 +122,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(4)
     void should_get_bad_request_when_the_length_of_username_is_greater_than_eight() throws Exception {
         User user = new User("user4user4", 35, "female", "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -115,7 +131,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(5)
     void should_get_bad_request_when_username_is_null() throws Exception {
         User user = new User(null, 35, "female", "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -125,7 +140,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(6)
     void should_get_bad_request_when_gender_is_null() throws Exception {
         User user = new User("user4", 35, null, "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -135,7 +149,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(7)
     void should_get_bad_request_when_age_is_less_than_18() throws Exception {
         User user = new User("user4", 17, "female", "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -145,7 +158,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(8)
     void should_get_bad_request_when_age_is_greater_than_100() throws Exception {
         User user = new User("user4", 101, "female", "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -155,7 +167,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(9)
     void should_get_bad_request_when_email_is_invalid() throws Exception {
         User user = new User("user4", 35, "female", "user4thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -165,7 +176,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(10)
     void should_get_bad_request_when_phone_number_is_null() throws Exception {
         User user = new User("user4", 35, "female", "user4@thoughtworks.com", null);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -175,7 +185,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(11)
     void should_get_bad_request_when_phone_number_is_invalid() throws Exception {
         User user = new User("user4", 35, "female", "user4@thoughtworks.com", "2345678905");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -185,7 +194,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(12)
     void should_return_reformatted_json_string_of_user_list() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
@@ -204,17 +212,11 @@ public class UserControllerTest {
                 "\"user_age\":40," +
                 "\"user_gender\":\"male\"," +
                 "\"user_email\":\"user2@thoughtworks.com\"," +
-                "\"user_phone\":\"12345678903\"}," +
-                "{\"user_name\":\"user3\"," +
-                "\"user_age\":25," +
-                "\"user_gender\":\"male\"," +
-                "\"user_email\":\"user3@thoughtworks.com\"," +
-                "\"user_phone\":\"12345678904\"}]";
+                "\"user_phone\":\"12345678903\"}]";
         assertEquals(expectedJsonStringOfUserList, mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
     }
 
     @Test
-    @Order(13)
     void should_throw_an_exception_when_parameters_not_meet_the_requirement() throws Exception {
         User user1 = new User("user55555", 35, "female", "user5@thoughtworks.com", "12345678906");
         ObjectMapper objectMapper = new ObjectMapper();

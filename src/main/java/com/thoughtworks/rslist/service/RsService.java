@@ -1,64 +1,76 @@
 package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.bean.RsEvent;
-import com.thoughtworks.rslist.bean.User;
+import com.thoughtworks.rslist.dto.RsEventDto;
+import com.thoughtworks.rslist.exception.UserNotExistException;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RsService {
 
     private final UserService userService;
-    private final List<RsEvent> rsList = new LinkedList<>();
+    private final RsEventRepository rsEventRepository;
 
-    public RsService(UserService userService) {
+    public RsService(UserService userService, RsEventRepository rsEventRepository) {
         this.userService = userService;
-        User root = new User("root", 20, "male", "root@thoughtworks.com", "12345678901");
-        User testUser1 = new User("user1", 30, "female", "user1@thoughtworks.com", "12345678902");
-        User testUser2 = new User("user2", 40, "male", "user2@thoughtworks.com", "12345678903");
-        rsList.add(new RsEvent("美股熔断", "经济", testUser1));
-        rsList.add(new RsEvent("边境冲突", "军事", root));
-        rsList.add(new RsEvent("示威活动", "自由", testUser2));
+        this.rsEventRepository = rsEventRepository;
     }
 
     public RsEvent getEvent(int id) {
-        if (id < 1 || id > rsList.size()) {
-            return null;
+        Optional<RsEventDto> optionalRsEventDto = rsEventRepository.findById(id);
+        if (optionalRsEventDto.isPresent()) {
+            RsEventDto rsEventDto = optionalRsEventDto.get();
+            return new RsEvent(rsEventDto.getName(), rsEventDto.getKeyword(), rsEventDto.getUserId());
         }
-        return rsList.get(id - 1);
+        return null;
     }
 
     public List<RsEvent> getEventList(Integer start, Integer end) {
+        List<RsEventDto> rsEventDtoList = rsEventRepository.findAll();
+        List<RsEvent> rsEventList = new LinkedList<>();
+        rsEventDtoList.forEach(rsEventDto -> rsEventList.add(new RsEvent(rsEventDto.getName(), rsEventDto.getKeyword(), rsEventDto.getUserId())));
         if (start == null || end == null) {
-            return rsList;
+            return rsEventList;
         }
-        if (start < 1 || end > rsList.size()) {
+        if (start < 1 || end > rsEventList.size()) {
             return null;
         }
-        return rsList.subList(start - 1, end);
+        return rsEventList.subList(start - 1, end);
     }
 
     public int addEvent(RsEvent rsEvent) {
-        if (userService.getUserByUsername(rsEvent.getUser().getUserName()) == null) {
-            userService.addNewUser(rsEvent.getUser());
+        int userId = rsEvent.getUserId();
+        if (userService.getUserByUserId(userId) != null) {
+            RsEventDto rsEventDto = rsEventRepository.save(new RsEventDto(rsEvent.getName(), rsEvent.getKeyword(),
+                    rsEvent.getUserId()));
+            return rsEventDto.getId();
+        } else {
+            throw new UserNotExistException("user not exist");
         }
-        rsList.add(rsEvent);
-        return rsList.size();
     }
 
     public void updateEvent(int id, String name, String keyword) {
-        if (name != null) {
-            rsList.get(id - 1).setName(name);
-        }
-        if (keyword != null) {
-            rsList.get(id - 1).setKeyword(keyword);
+        Optional<RsEventDto> optionalRsEventDto = rsEventRepository.findById(id);
+        if (optionalRsEventDto.isPresent()) {
+            RsEventDto rsEventDto = optionalRsEventDto.get();
+            if (name != null && keyword != null) {
+                rsEventRepository.updateNameAndKeywordById(id, name, keyword);
+            } else if (name != null) {
+                rsEventRepository.updateNameAndKeywordById(id, name, rsEventDto.getKeyword());
+            } else if (keyword != null) {
+                rsEventRepository.updateNameAndKeywordById(id, rsEventDto.getName(), keyword);
+            }
         }
     }
 
     public void deleteEventById(int id) {
-        rsList.remove(id - 1);
+        rsEventRepository.deleteById(id);
     }
 
 }
