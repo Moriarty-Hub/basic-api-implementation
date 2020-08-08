@@ -39,9 +39,9 @@ public class RsServiceTest {
         userRepository.save(userTestData2);
         userRepository.save(userTestData3);
 
-        RsEventDto eventTestData1 = new RsEventDto("name1", "keyword1", 1);
-        RsEventDto eventTestData2 = new RsEventDto("name2", "keyword2", 2);
-        RsEventDto eventTestData3 = new RsEventDto("name3", "keyword3", 3);
+        RsEventDto eventTestData1 = new RsEventDto("name1", "keyword1", userTestData1);
+        RsEventDto eventTestData2 = new RsEventDto("name2", "keyword2", userTestData2);
+        RsEventDto eventTestData3 = new RsEventDto("name3", "keyword3", userTestData3);
         rsEventRepository.save(eventTestData1);
         rsEventRepository.save(eventTestData2);
         rsEventRepository.save(eventTestData3);

@@ -39,4 +39,9 @@ public class UserController {
     public ResponseEntity<String> getUserListOfJsonFormat() throws JsonProcessingException {
         return ResponseEntity.ok(userService.getUserListOfJsonFormat());
     }
+
+    @GetMapping("/rs/deleteUser")
+    public void deleteUserById(@RequestParam int id) {
+        userService.deleteUserById(id);
+    }
 }

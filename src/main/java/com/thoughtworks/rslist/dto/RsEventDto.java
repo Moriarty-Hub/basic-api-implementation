@@ -10,16 +10,18 @@ public class RsEventDto {
     private int id;
     private String name;
     private String keyword;
-    private int userId;
+
+    @ManyToOne
+    private UserDto userDto;
 
     public RsEventDto() {
 
     }
 
-    public RsEventDto(String name, String keyword, int userId) {
+    public RsEventDto(String name, String keyword, UserDto userDto) {
         this.name = name;
         this.keyword = keyword;
-        this.userId = userId;
+        this.userDto = userDto;
     }
 
     public int getId() {
@@ -42,12 +44,12 @@ public class RsEventDto {
         this.keyword = keyword;
     }
 
-    public int getUserId() {
-        return userId;
+    public UserDto getUserDto() {
+        return userDto;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserId(UserDto userDto) {
+        this.userDto = userDto;
     }
 
     @Override
@@ -56,10 +58,8 @@ public class RsEventDto {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", keyword='" + keyword + '\'' +
-                ", userId=" + userId +
+                ", userDto=" + userDto.toString() +
                 '}';
     }
 
-    @ManyToOne
-    private UserDto userDtoList;
 }

@@ -1,9 +1,11 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.bean.RsEvent;
 import com.thoughtworks.rslist.bean.User;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.service.RsService;
 import com.thoughtworks.rslist.service.UserService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -34,7 +37,7 @@ public class UserControllerTest {
     @Autowired
     private UserService userService;
     @Autowired
-    private RsEventRepository rsEventRepository;
+    private RsService rsService;
     @Autowired
     private UserRepository userRepository;
 
@@ -43,6 +46,9 @@ public class UserControllerTest {
         userService.addNewUser(new User("root", 20, "male", "root@thoughtworks.com", "12345678901"));
         userService.addNewUser(new User("user1", 30, "female", "user1@thoughtworks.com", "12345678902"));
         userService.addNewUser(new User("user2", 40, "male", "user2@thoughtworks.com", "12345678903"));
+        rsService.addEvent(new RsEvent("name1", "keyword1", 1));
+        rsService.addEvent(new RsEvent("name2", "keyword2", 2));
+        rsService.addEvent(new RsEvent("name3", "keyword3", 3));
     }
 
     @AfterEach
@@ -97,27 +103,6 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getUser?username=user0"))
                 .andExpect(jsonPath("$").doesNotExist())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void should_add_the_new_user_into_list() throws Exception {
-        mockMvc.perform(get("/rs/getUser?username=user3"))
-                .andExpect(jsonPath("$").doesNotExist())
-                .andExpect(status().isOk());
-
-        User user = new User("user3", 25, "male", "user3@thoughtworks.com", "12345678904");
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("index", "4"));
-        mockMvc.perform(get("/rs/getUser?username=user3"))
-                .andExpect(jsonPath("$.user_name", is("user3")))
-                .andExpect(jsonPath("$.user_age", is(25)))
-                .andExpect(jsonPath("$.user_gender", is("male")))
-                .andExpect(jsonPath("$.user_email", is("user3@thoughtworks.com")))
-                .andExpect(jsonPath("$.user_phone", is("12345678904")))
                 .andExpect(status().isOk());
     }
 
@@ -248,6 +233,32 @@ public class UserControllerTest {
         mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser5))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
+    }
+
+    @Test
+    void should_delete_all_events_related_to_the_user_when_delete_user() throws Exception {
+        rsService.addEvent(new RsEvent("name4", "keyword4", 3));
+        rsService.addEvent(new RsEvent("name4", "keyword4", 3));
+        List<RsEvent> rsEventListBeforeUserDeleted = rsService.getEventList(null, null);
+        int eventNumberOfUser3 = 0;
+        for (RsEvent rsEvent :rsEventListBeforeUserDeleted) {
+            if (rsEvent.getUserId() == 3) {
+                eventNumberOfUser3++;
+            }
+        }
+        assertEquals(3, eventNumberOfUser3);
+
+        mockMvc.perform(get("/rs/deleteUser?id=3"))
+                .andExpect(status().isOk());
+
+        List<RsEvent> rsEventListAfterUserDeleted = rsService.getEventList(null, null);
+        eventNumberOfUser3 = 0;
+        for (RsEvent rsEvent :rsEventListAfterUserDeleted) {
+            if (rsEvent.getUserId() == 3) {
+                eventNumberOfUser3++;
+            }
+        }
+        assertEquals(0, eventNumberOfUser3);
     }
 
 

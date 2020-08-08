@@ -57,4 +57,8 @@ public class UserService {
         }
         return null;
     }
+
+    public void deleteUserById(int id) {
+        userRepository.deleteById(id);
+    }
 }

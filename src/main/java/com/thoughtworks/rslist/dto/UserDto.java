@@ -1,11 +1,10 @@
 package com.thoughtworks.rslist.dto;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -19,6 +18,9 @@ public class UserDto {
     private String email;
     private String phone;
     private int numberOfVotes = 10;
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "userDto")
+    private List<RsEventDto> rsEventDtoList;
 
     public UserDto() {
 
