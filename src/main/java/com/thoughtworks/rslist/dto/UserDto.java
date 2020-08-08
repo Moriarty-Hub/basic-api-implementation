@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "user")
 public class UserDto {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String username;
     private int age;

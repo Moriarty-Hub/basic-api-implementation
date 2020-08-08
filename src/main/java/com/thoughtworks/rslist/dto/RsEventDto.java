@@ -6,10 +6,11 @@ import javax.persistence.*;
 @Table(name = "rs_event")
 public class RsEventDto {
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private String keyword;
+    private int voteNum;
 
     @ManyToOne
     private UserDto userDto;
@@ -50,6 +51,14 @@ public class RsEventDto {
 
     public void setUserId(UserDto userDto) {
         this.userDto = userDto;
+    }
+
+    public int getVoteNum() {
+        return voteNum;
+    }
+
+    public void setVoteNum(int voteNum) {
+        this.voteNum = voteNum;
     }
 
     @Override

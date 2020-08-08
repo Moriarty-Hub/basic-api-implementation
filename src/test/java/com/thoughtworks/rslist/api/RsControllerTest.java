@@ -38,7 +38,7 @@ class RsControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    private static final int INITIAL_GENERATED_VALUE = 3;
+    private static final int INITIAL_GENERATED_VALUE = 0;
 
     @BeforeEach
     public void setUp() {

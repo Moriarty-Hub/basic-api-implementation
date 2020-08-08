@@ -29,4 +29,9 @@ public interface RsEventRepository extends CrudRepository<RsEventDto, Integer> {
     @Override
     long count();
 
+    @Transactional
+    @Modifying
+    @Query("UPDATE RsEventDto rsEventDto SET rsEventDto.voteNum = :vote_num WHERE rsEventDto.id = :id")
+    void updateVoteNumById(@Param("id") int id, @Param("vote_num") int voteNum);
+
 }
