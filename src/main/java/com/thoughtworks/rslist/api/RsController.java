@@ -45,10 +45,9 @@ public class RsController {
     return ResponseEntity.created(null).header("index", String.valueOf(index)).build();
   }
 
-  @GetMapping("/rs/updateEvent")
-  public ResponseEntity<String> updateEvent(@RequestParam int id, @RequestParam (required = false) String name,
-                          @RequestParam (required = false) String keyword) {
-    rsService.updateEvent(id, name, keyword);
+  @PatchMapping("/rs/{rsEventId}")
+  public ResponseEntity<String> updateEvent(@PathVariable int rsEventId, @RequestBody RsEvent rsEvent) {
+    rsService.updateEvent(rsEventId, rsEvent);
     return ResponseEntity.ok().build();
   }
 

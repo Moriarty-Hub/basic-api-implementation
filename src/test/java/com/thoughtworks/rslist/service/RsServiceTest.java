@@ -128,17 +128,20 @@ public class RsServiceTest {
     @Test
     void should_update_event() {
         System.out.println(rsEventRepository.findAll().toString());
-        rsService.updateEvent(INITIAL_GENERATED_VALUE + 1, "newName1", "newKeyword1");
+        RsEvent rsEvent1 = new RsEvent("newName1", "newKeyword1", 1);
+        rsService.updateEvent(INITIAL_GENERATED_VALUE + 1, rsEvent1);
         RsEvent updatedEvent1 = rsService.getEvent(INITIAL_GENERATED_VALUE + 1);
         assertEquals("newName1", updatedEvent1.getName());
         assertEquals("newKeyword1", updatedEvent1.getKeyword());
 
-        rsService.updateEvent(INITIAL_GENERATED_VALUE + 2, "newName2", null);
+        RsEvent rsEvent2 = new RsEvent("newName2", null, 2);
+        rsService.updateEvent(INITIAL_GENERATED_VALUE + 2, rsEvent2);
         RsEvent updatedEvent2 = rsService.getEvent(INITIAL_GENERATED_VALUE + 2);
         assertEquals("newName2", updatedEvent2.getName());
         assertEquals("keyword2", updatedEvent2.getKeyword());
 
-        rsService.updateEvent(INITIAL_GENERATED_VALUE + 3, null, "newKeyword3");
+        RsEvent rsEvent3 = new RsEvent(null, "newKeyword3", 3);
+        rsService.updateEvent(INITIAL_GENERATED_VALUE + 3, rsEvent3);
         RsEvent updatedEvent3 = rsService.getEvent(INITIAL_GENERATED_VALUE + 3);
         assertEquals("name3", updatedEvent3.getName());
         assertEquals("newKeyword3", updatedEvent3.getKeyword());

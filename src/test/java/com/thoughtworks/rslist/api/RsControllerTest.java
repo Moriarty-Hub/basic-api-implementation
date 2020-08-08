@@ -19,8 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -152,7 +151,10 @@ class RsControllerTest {
         mockMvc.perform(get("/rs/getEvent?id=" + id2))
                 .andExpect(jsonPath("$.name", is("边境冲突")))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/updateEvent?id="+ id2 + "&name=收复台湾"))
+        RsEvent rsEvent = new RsEvent("收复台湾", null, 2);
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(patch("/rs/" + id2).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(rsEvent)))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEvent?id=" + id2))
                 .andExpect(jsonPath("$.name", is("收复台湾")));
@@ -163,7 +165,10 @@ class RsControllerTest {
         int id3 = INITIAL_GENERATED_VALUE + 3;
         mockMvc.perform(get("/rs/getEvent?id=" + id3))
                 .andExpect(jsonPath("$.keyword", is("自由")));
-        mockMvc.perform(get("/rs/updateEvent?id=" + id3 + "&keyword=暴力"))
+        RsEvent rsEvent = new RsEvent("", "暴力", 3);
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(patch("/rs/" + id3).contentType(MediaType.APPLICATION_JSON).content(objectMapper
+                .writeValueAsBytes(rsEvent)))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEvent?id=" + id3))
                 .andExpect(jsonPath("$.keyword", is("暴力")));
@@ -175,11 +180,29 @@ class RsControllerTest {
         mockMvc.perform(get("/rs/getEvent?id=" + id1))
                 .andExpect(jsonPath("$.name", is("美股熔断")))
                 .andExpect(jsonPath("$.keyword", is("经济")));
-        mockMvc.perform(get("/rs/updateEvent?id=" + id1 + "&name=奥运会推迟&keyword=体育"))
+        RsEvent rsEvent = new RsEvent("奥运会推迟", "体育", 1);
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(patch("/rs/" + id1).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(rsEvent)))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/getEvent?id=" + id1))
                 .andExpect(jsonPath("$.name", is("奥运会推迟")))
                 .andExpect(jsonPath("$.keyword", is("体育")));
+    }
+
+    @Test
+    void should_return_bad_request_when_the_given_user_id_is_unmatched_with_user_id_in_rs_event() throws Exception {
+        int id3 = INITIAL_GENERATED_VALUE + 3;
+        mockMvc.perform(get("/rs/getEvent?id=" + id3))
+                .andExpect(jsonPath("$.name", is("示威活动")))
+                .andExpect(jsonPath("$.keyword", is("自由")))
+                .andExpect(jsonPath("$.userId", is(3)));
+        RsEvent rsEvent = new RsEvent("示威游行", "暴力", 8);
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(patch("/rs/" + id3).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(rsEvent)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("unmatched user id")));
     }
 
     @Test

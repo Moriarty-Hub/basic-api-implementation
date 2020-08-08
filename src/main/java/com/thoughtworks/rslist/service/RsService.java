@@ -1,9 +1,9 @@
 package com.thoughtworks.rslist.service;
 
 import com.thoughtworks.rslist.bean.RsEvent;
-import com.thoughtworks.rslist.bean.User;
 import com.thoughtworks.rslist.dto.RsEventDto;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.exception.UnmatchedUserIdException;
 import com.thoughtworks.rslist.exception.UserNotExistException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
@@ -50,17 +50,6 @@ public class RsService {
     }
 
     public int addEvent(RsEvent rsEvent) {
-        /*int userId = rsEvent.getUserId();
-        if (userService.getUserByUserId(userId) != null) {
-            User user = userService.getUserByUserId(userId);
-            System.out.println(new RsEventDto(rsEvent.getName(), rsEvent.getKeyword(),
-                    new UserDto(user.getUserName(), user.getAge(), user.getGender(), user.getEmail(), user.getPhone())).toString());
-            RsEventDto rsEventDto = rsEventRepository.save(new RsEventDto(rsEvent.getName(), rsEvent.getKeyword(),
-                    userRepository.findById(userId)));
-            return rsEventDto.getId();
-        } else {
-            throw new UserNotExistException("user not exist");
-        }*/
         int userId = rsEvent.getUserId();
         Optional<UserDto> optionalUserDto = userRepository.findById(userId);
         if (!optionalUserDto.isPresent()) {
@@ -70,8 +59,24 @@ public class RsService {
         return rsEventRepository.save(new RsEventDto(rsEvent.getName(), rsEvent.getKeyword(), userDto)).getId();
     }
 
-    public void updateEvent(int id, String name, String keyword) {
+    public void updateEvent(int id, RsEvent rsEvent) {
         Optional<RsEventDto> optionalRsEventDto = rsEventRepository.findById(id);
+        if (optionalRsEventDto.isPresent()) {
+            RsEventDto rsEventDto = optionalRsEventDto.get();
+            if (rsEvent.getUserId() != rsEventDto.getUserDto().getId()) {
+                throw new UnmatchedUserIdException("unmatched user id");
+            }
+            String name = rsEvent.getName();
+            String keyword = rsEvent.getKeyword();
+            if (name != null && keyword != null) {
+                rsEventRepository.updateNameAndKeywordById(id, name, keyword);
+            } else if (name != null) {
+                rsEventRepository.updateNameAndKeywordById(id, name, rsEventDto.getKeyword());
+            } else if (keyword != null) {
+                rsEventRepository.updateNameAndKeywordById(id, rsEventDto.getName(), keyword);
+            }
+        }
+        /*Optional<RsEventDto> optionalRsEventDto = rsEventRepository.findById(id);
         if (optionalRsEventDto.isPresent()) {
             RsEventDto rsEventDto = optionalRsEventDto.get();
             if (name != null && keyword != null) {
@@ -81,7 +86,7 @@ public class RsService {
             } else if (keyword != null) {
                 rsEventRepository.updateNameAndKeywordById(id, rsEventDto.getName(), keyword);
             }
-        }
+        }*/
     }
 
     public void deleteEventById(int id) {

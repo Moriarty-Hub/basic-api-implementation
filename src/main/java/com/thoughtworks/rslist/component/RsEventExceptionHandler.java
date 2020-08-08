@@ -1,10 +1,8 @@
 package com.thoughtworks.rslist.component;
 
 import com.thoughtworks.rslist.api.RsController;
+import com.thoughtworks.rslist.exception.*;
 import com.thoughtworks.rslist.exception.Error;
-import com.thoughtworks.rslist.exception.IndexOutOfBoundaryException;
-import com.thoughtworks.rslist.exception.StartOrEndParamOutOfBoundaryException;
-import com.thoughtworks.rslist.exception.UserNotExistException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,6 +28,12 @@ public class RsEventExceptionHandler {
     @ExceptionHandler(UserNotExistException.class)
     public ResponseEntity<Error> userNotExistExceptionHandler(UserNotExistException userNotExistException) {
         Error error = new Error(userNotExistException.getMessage());
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(UnmatchedUserIdException.class)
+    public ResponseEntity<Error> unmatchedUserIdExceptionHandler(UnmatchedUserIdException unmatchedUserIdException) {
+        Error error = new Error(unmatchedUserIdException.getMessage());
         return ResponseEntity.badRequest().body(error);
     }
 }
