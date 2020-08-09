@@ -16,8 +16,10 @@ public class VoteController {
         this.voteService = voteService;
     }
 
-    @GetMapping("/voteRecord")
-    public ResponseEntity<List<Vote>> getVoteRecordList(@RequestParam (required = false) Integer userId, @RequestParam (required = false) Integer rsEventId) {
+    @GetMapping({"/rs/voteRecord/userId/{userId}/rsEventId/{rsEventId}", "/rs/voteRecord/userId/{userId}",
+            "/rs/voteRecord/rsEventId/{rsEventId}", "/rs/voteRecord"})
+    public ResponseEntity<List<Vote>> getVoteRecordList(@PathVariable (required = false) Integer userId,
+                                                        @PathVariable (required = false) Integer rsEventId) {
         return ResponseEntity.ok(voteService.getVoteRecordList(userId, rsEventId));
     }
 
@@ -28,10 +30,10 @@ public class VoteController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/voteRecordByTime")
-    public ResponseEntity<List<Vote>> getVoteRecordByTime(@RequestParam Integer startYear, @RequestParam Integer startMonth,
-                                                          @RequestParam Integer startDay, @RequestParam Integer endYear,
-                                                          @RequestParam Integer endMonth, @RequestParam Integer endDay) {
+    @GetMapping("/rs/voteRecord/startYear/{startYear}/startMonth/{startMonth}/startDay/{startDay}/endYear/{endYear}/endMonth/{endMonth}/endDay/{endDay}")
+    public ResponseEntity<List<Vote>> getVoteRecordByTime(@PathVariable Integer startYear, @PathVariable Integer startMonth,
+                                                          @PathVariable Integer startDay, @PathVariable Integer endYear,
+                                                          @PathVariable Integer endMonth, @PathVariable Integer endDay) {
         return ResponseEntity.ok(voteService.getVoteRecordListByTime(startYear, startMonth, startDay, endYear, endMonth, endDay));
     }
 }

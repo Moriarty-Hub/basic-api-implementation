@@ -19,29 +19,29 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/rs/getAllUsers")
+    @GetMapping("/rs/userList")
     public ResponseEntity<List<User>> getEntireUserList() {
         return ResponseEntity.ok(userService.getUserList());
     }
 
-    @GetMapping("/rs/getUser")
-    public ResponseEntity<User> getUserByUsername(@RequestParam String username) {
+    @GetMapping("/rs/user/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
-    @PostMapping("/rs/addNewUser")
+    @PostMapping("/rs/user")
     public ResponseEntity<String> addNewUser(@RequestBody @Valid User user) {
         int index = userService.addNewUser(user);
         return ResponseEntity.created(null).header("index", String.valueOf(index)).build();
     }
 
-    @GetMapping("/users")
+    @GetMapping("/jsonFormattedUserList")
     public ResponseEntity<String> getUserListOfJsonFormat() throws JsonProcessingException {
         return ResponseEntity.ok(userService.getUserListOfJsonFormat());
     }
 
-    @GetMapping("/rs/deleteUser")
-    public void deleteUserById(@RequestParam int id) {
+    @DeleteMapping("/rs/user/{id}")
+    public void deleteUserById(@PathVariable int id) {
         userService.deleteUserById(id);
     }
 }

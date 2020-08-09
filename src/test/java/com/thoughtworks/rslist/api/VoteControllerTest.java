@@ -68,7 +68,7 @@ public class VoteControllerTest {
 
     @Test
     void should_return_vote_record() throws Exception {
-        mockMvc.perform(get("/voteRecord"))
+        mockMvc.perform(get("/rs/voteRecord"))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].num", is(5)))
                 .andExpect(jsonPath("$[0].userId", is(1)))
@@ -81,7 +81,7 @@ public class VoteControllerTest {
 
     @Test
     void should_return_vote_record_of_user2() throws Exception {
-        mockMvc.perform(get("/voteRecord").param("userId", "2"))
+        mockMvc.perform(get("/rs/voteRecord/userId/2"))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].num", is(6)))
                 .andExpect(jsonPath("$[0].userId", is(2)))
@@ -91,7 +91,7 @@ public class VoteControllerTest {
 
     @Test
     void should_return_vote_record_of_event1() throws Exception {
-        mockMvc.perform(get("/voteRecord").param("rsEventId", "1"))
+        mockMvc.perform(get("/rs/voteRecord/rsEventId/1"))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].num", is(5)))
                 .andExpect(jsonPath("$[0].userId", is(1)))
@@ -206,7 +206,7 @@ public class VoteControllerTest {
         voteRepository.save(voteTestData10);
 
 
-        mockMvc.perform(get("/voteRecordByTime")
+        mockMvc.perform(get("/rs/voteRecord/startYear/2020/startMonth/2/startDay/1/endYear/2020/endMonth/5/endDay/1")
                 .param("startYear", "2020").param("startMonth", "2")
                 .param("startDay", "1").param("endYear", "2020")
                 .param("endMonth", "5").param("endDay", "1"))

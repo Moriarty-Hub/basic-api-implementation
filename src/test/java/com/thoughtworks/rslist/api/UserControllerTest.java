@@ -3,11 +3,12 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.bean.RsEvent;
 import com.thoughtworks.rslist.bean.User;
-import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.RsService;
 import com.thoughtworks.rslist.service.UserService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +23,9 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -58,7 +59,7 @@ public class UserControllerTest {
 
     @Test
     void should_return_entire_user_list() throws Exception {
-        mockMvc.perform(get("/rs/getAllUsers"))
+        mockMvc.perform(get("/rs/userList"))
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].user_name", is("root")))
                 .andExpect(jsonPath("$[0].user_age", is(20)))
@@ -80,28 +81,28 @@ public class UserControllerTest {
 
     @Test
     void should_return_user_by_username() throws Exception {
-        mockMvc.perform(get("/rs/getUser?username=root"))
+        mockMvc.perform(get("/rs/user/root"))
                 .andExpect(jsonPath("$.user_name", is("root")))
                 .andExpect(jsonPath("$.user_age", is(20)))
                 .andExpect(jsonPath("$.user_gender", is("male")))
                 .andExpect(jsonPath("$.user_email", is("root@thoughtworks.com")))
                 .andExpect(jsonPath("$.user_phone", is("12345678901")))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/getUser?username=user1"))
+        mockMvc.perform(get("/rs/user/user1"))
                 .andExpect(jsonPath("$.user_name", is("user1")))
                 .andExpect(jsonPath("$.user_age", is(30)))
                 .andExpect(jsonPath("$.user_gender", is("female")))
                 .andExpect(jsonPath("$.user_email", is("user1@thoughtworks.com")))
                 .andExpect(jsonPath("$.user_phone", is("12345678902")))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/getUser?username=user2"))
+        mockMvc.perform(get("/rs/user/user2"))
                 .andExpect(jsonPath("$.user_name", is("user2")))
                 .andExpect(jsonPath("$.user_age", is(40)))
                 .andExpect(jsonPath("$.user_gender", is("male")))
                 .andExpect(jsonPath("$.user_email", is("user2@thoughtworks.com")))
                 .andExpect(jsonPath("$.user_phone", is("12345678903")))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/getUser?username=user0"))
+        mockMvc.perform(get("/rs/user/user0"))
                 .andExpect(jsonPath("$").doesNotExist())
                 .andExpect(status().isOk());
     }
@@ -111,7 +112,7 @@ public class UserControllerTest {
         User user = new User("user4user4", 35, "female", "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
     }
 
@@ -120,7 +121,7 @@ public class UserControllerTest {
         User user = new User(null, 35, "female", "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
     }
 
@@ -129,7 +130,7 @@ public class UserControllerTest {
         User user = new User("user4", 35, null, "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
     }
 
@@ -138,7 +139,7 @@ public class UserControllerTest {
         User user = new User("user4", 17, "female", "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
     }
 
@@ -147,7 +148,7 @@ public class UserControllerTest {
         User user = new User("user4", 101, "female", "user4@thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
     }
 
@@ -156,7 +157,7 @@ public class UserControllerTest {
         User user = new User("user4", 35, "female", "user4thoughtworks.com", "12345678905");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
     }
 
@@ -165,7 +166,7 @@ public class UserControllerTest {
         User user = new User("user4", 35, "female", "user4@thoughtworks.com", null);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
     }
 
@@ -174,13 +175,13 @@ public class UserControllerTest {
         User user = new User("user4", 35, "female", "user4@thoughtworks.com", "2345678905");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void should_return_reformatted_json_string_of_user_list() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/users"))
+        MvcResult mvcResult = mockMvc.perform(get("/jsonFormattedUserList"))
                 .andExpect(status().isOk())
                 .andReturn();
         String expectedJsonStringOfUserList = "[{\"user_name\":\"root\"," +
@@ -206,31 +207,31 @@ public class UserControllerTest {
         User user1 = new User("user55555", 35, "female", "user5@thoughtworks.com", "12345678906");
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonStringOfUser1 = objectMapper.writeValueAsString(user1);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser1))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser1))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
 
         User user2 = new User("user5", 16, "female", "user5@thoughtworks.com", "12345678906");
         String jsonStringOfUser2 = objectMapper.writeValueAsString(user2);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser2))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser2))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
 
         User user3 = new User("user5", 35, null, "user5@thoughtworks.com", "12345678906");
         String jsonStringOfUser3 = objectMapper.writeValueAsString(user3);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser3))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser3))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
 
         User user4 = new User("user5", 35, "female", "user5thoughtworks.com", "12345678906");
         String jsonStringOfUser4 = objectMapper.writeValueAsString(user4);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser4))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser4))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
 
         User user5 = new User("user5", 35, "female", "user5@thoughtworks.com", "312345678906");
         String jsonStringOfUser5 = objectMapper.writeValueAsString(user5);
-        mockMvc.perform(post("/rs/addNewUser").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser5))
+        mockMvc.perform(post("/rs/user").contentType(MediaType.APPLICATION_JSON).content(jsonStringOfUser5))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
     }
@@ -248,7 +249,7 @@ public class UserControllerTest {
         }
         assertEquals(3, eventNumberOfUser3);
 
-        mockMvc.perform(get("/rs/deleteUser?id=3"))
+        mockMvc.perform(delete("/rs/user/3"))
                 .andExpect(status().isOk());
 
         List<RsEvent> rsEventListAfterUserDeleted = rsService.getEventList(null, null);
