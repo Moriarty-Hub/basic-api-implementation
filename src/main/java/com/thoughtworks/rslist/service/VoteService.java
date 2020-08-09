@@ -29,7 +29,7 @@ public class VoteService {
         this.rsEventRepository = rsEventRepository;
     }
 
-    public List<Vote> getVoteRecordList(Integer userId, Integer rsEventId) {
+    private List<Vote> getVoteRecordList() {
         List<VoteDto> voteDtoList = voteRepository.findAll();
         List<Vote> voteList = new LinkedList<>();
         voteDtoList.forEach(voteDto -> {
@@ -37,6 +37,11 @@ public class VoteService {
                     voteDto.getLocalDateTime());
             voteList.add(vote);
         });
+        return voteList;
+    }
+
+    public List<Vote> getVoteRecordList(Integer userId, Integer rsEventId) {
+        List<Vote> voteList = getVoteRecordList();
         if (userId == null && rsEventId == null) {
             return voteList;
         }
@@ -64,5 +69,15 @@ public class VoteService {
         userRepository.updateVoteNumById(userId, userDto.getNumberOfVotes() - voteNum);
         rsEventRepository.updateVoteNumById(rsEventId, rsEventDto.getVoteNum() + voteNum);
         voteRepository.save(new VoteDto(LocalDateTime.parse(voteTime), voteNum, rsEventDto, userDto));
+    }
+
+    public List<Vote> getVoteRecordListByTime(Integer startYear, Integer startMonth, Integer startDay,
+                                              Integer endYear, Integer endMonth, Integer endDay) {
+        LocalDateTime startDateTime = LocalDateTime.of(startYear, startMonth, startDay, 0, 0, 0);
+        LocalDateTime endDataTime = LocalDateTime.of(endYear, endMonth, endDay, 0, 0, 0);
+        return getVoteRecordList().stream()
+                .filter(voteRecord -> voteRecord.getLocalDateTime().isAfter(startDateTime)
+                        && voteRecord.getLocalDateTime().isBefore(endDataTime))
+                .collect(Collectors.toList());
     }
 }

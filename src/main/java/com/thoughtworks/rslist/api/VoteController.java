@@ -1,19 +1,16 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.bean.Vote;
-import com.thoughtworks.rslist.dto.RsEventDto;
 import com.thoughtworks.rslist.service.VoteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class VoteController {
 
-    private VoteService voteService;
+    private final VoteService voteService;
 
     public VoteController(VoteService voteService) {
         this.voteService = voteService;
@@ -29,5 +26,12 @@ public class VoteController {
                                                                 @RequestParam int userId, @RequestParam String voteTime) {
         voteService.voteEvent(rsEventId, voteNum, userId, voteTime);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/voteRecordByTime")
+    public ResponseEntity<List<Vote>> getVoteRecordByTime(@RequestParam Integer startYear, @RequestParam Integer startMonth,
+                                                          @RequestParam Integer startDay, @RequestParam Integer endYear,
+                                                          @RequestParam Integer endMonth, @RequestParam Integer endDay) {
+        return ResponseEntity.ok(voteService.getVoteRecordListByTime(startYear, startMonth, startDay, endYear, endMonth, endDay));
     }
 }
